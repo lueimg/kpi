@@ -1,0 +1,66 @@
+<div class="im-location-wrap">
+    <p class="form-control-static">{{ubigeoSelected  || '-' }}</p>
+</div>
+
+ <div class="row">
+    <div class="col-sm-4">
+        <div class="row">
+            <label class="col-sm-2 control-label">Departamento</label>
+        </div>
+        <div class="row">
+            <ui-select class="col-sm-12"
+                        ng-model="locationData.dpto"
+                        ng-class="{'ui-select-element': true}"
+                        ng-disabled="departamentos.length < 1"
+                        data-on-select="showProvincias()">
+                <ui-select-match data-allow-clear="true"
+                                 data-placeholder="Seleccione un departamento.">
+                    <span ng-bind="$select.selected.name"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="item.coddpto as item in departamentos | propsFilter: {name: $select.search}">
+                    <span ng-bind-html="item.name | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="row">
+            <label class="col-sm-2 control-label">Provincia</label>
+        </div>
+        <div class="row">
+            <ui-select class="col-sm-12"
+                        ng-model="locationData.prov"
+                        ng-class="{'ui-select-element': true}"
+                        ng-disabled="provincias.results.list.length < 1"
+                        data-on-select="showDistritos()">
+                <ui-select-match data-allow-clear="true"
+                                    data-placeholder="Seleccione una provincia.">
+                    <span ng-bind="$select.selected.name"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="item.codprov as item in provincias.results.list | propsFilter: {name: $select.search}">
+                    <span ng-bind-html="item.name | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="row">
+            <label class="col-sm-2 control-label">Distrito</label>
+        </div>
+        <div class="row">
+            <ui-select class="col-sm-12"
+                        ng-model="locationData.dist"
+                        ng-class="{'ui-select-element': true}"
+                        ng-disabled="distritos.results.list.length < 1"
+                        data-on-select="onSelectLocation()">
+                <ui-select-match data-allow-clear="true"
+                                    data-placeholder="Seleccione un distrito.">
+                    <span ng-bind="$select.selected.name"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="item.coddist as item in distritos.results.list | propsFilter: {name: $select.search}">
+                    <span ng-bind-html="item.name | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</div>

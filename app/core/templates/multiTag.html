@@ -1,0 +1,12 @@
+<ui-select multiple
+           class="col-sm-10"
+           theme="bootstrap"
+           ng-model="data"
+           data-close-on-select="false"
+           data-on-select="clearSelection($select)"
+           data-on-remove="removeTag($item)">
+    <ui-select-match placeholder="{{placeholder}}">{{$item}}</ui-select-match>
+    <ui-select-choices repeat="item in getTags($select.search) | filter:$select.search">
+        <span ng-bind-html="item | highlight: $select.search"></span>
+    </ui-select-choices>
+</ui-select>

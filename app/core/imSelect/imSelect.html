@@ -1,0 +1,14 @@
+<ad-infinite-dropdown dropdown-name="{{ajaxConfig.name}}"
+                display-property="{{ajaxConfig.displayProperty}}"
+                initial-label="{{ajaxConfig.initialText}}"
+                selected-items="ajaxConfig.selectedItem"
+                max-height="300px"
+                max-width="500px"
+                single-selection-mode="true"
+                dropdown-status="ajaxConfig.dropdownStatus"
+                label-display-property="{{ajaxConfig.displayProperty}}"
+                on-item-click="ajaxConfig.onSelectItem"
+                dropdown-header-template-url="core/imSelect/customSearch.html"
+                on-data-loaded="dlc($success, $response)"
+                ajax-config="ajaxConfig">
+</ad-infinite-dropdown>

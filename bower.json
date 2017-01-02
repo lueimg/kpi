@@ -1,0 +1,38 @@
+{
+  "name": "documentario",
+  "description": "",
+  "main": "",
+  "authors": [
+    "luis mori <lmori@belatrixsf.com>"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-resource": "^1.5.5",
+    "angular-sanitize": "^1.5.5",
+    "adapt-strap": "^2.5.0",
+    "angular-strap": "^2.3.8",
+    "angular-cookies": "^1.5.5",
+    "angular-route": "^1.5.5",
+    "angular-animate": "^1.5.5",
+    "angular-ui-grid": "^3.1.1",
+    "angular-bootstrap": "^1.3.2",
+    "bootstrap-datepicker": "^1.6.1",
+    "ng-file-upload": "^12.0.4",
+    "angular-ui-select": "^0.17.1"
+  },
+  "resolutions": {
+    "bootstrap": "^3.3.4",
+    "angular-sanitize": "^1.5.5",
+    "angular": "^1.5.5"
+  }
+}
