@@ -1,5 +1,7 @@
 var rutas = require('express').Router(),
-    extend = require('util')._extend;
+    extend = require('util')._extend,
+    ResponseUtils = require('../core/ResponseUtils.js'),
+    TABLE = 'kpi' ;
 /**
  * GET    /CLIENTS/ list of active clients
  * POST   /CLIENTS/ save a new client
@@ -18,17 +20,20 @@ var rutas = require('express').Router(),
  * updated_at
  */
 
+
+
 rutas.route('/')
   .get(function (req, res) {
     var filter = {
-          description: req.query.description,
+          nombre: req.query.nombre,
+          clasificacion: req.query.clasificacion,
           pageStart: parseInt(req.query.skip || 0, 10),
           pageCount: parseInt(req.query.limit || 0, 10),
           orderBy: ''
         },
-        dataQuery = 'SELECT * FROM CLIENTS WHERE 1 ',
-        countQuery = 'SELECT COUNT(ID) AS COUNTER FROM CLIENTS WHERE 1 ',
-        commonQuery = 'AND STATUS = 1 ',
+        dataQuery = 'SELECT * FROM kpi WHERE 1 ',
+        countQuery = 'SELECT COUNT(idkpi) AS COUNTER FROM kpi WHERE 1 ',
+        commonQuery = '',
         dataParams = [],
         countParams = [];
 
@@ -37,9 +42,9 @@ rutas.route('/')
       filter.orderBy = req.query.sort + ' ' + req.query.sort_dir;
     }
 
-    if (filter.description) {
-      commonQuery += 'AND DESCRIPTION LIKE ? ';
-      dataParams.push('%' + filter.description.replace(/ /g, '%') + '%');
+    if (filter.nombre) {
+      commonQuery += 'AND nombre LIKE ? ';
+      dataParams.push('%' + filter.nombre.replace(/ /g, '%') + '%');
     }
 
     // Counter doesn't need exta params so make a copy of data params at this point
@@ -53,7 +58,7 @@ rutas.route('/')
     if (filter.orderBy) {
       dataQuery += filter.orderBy;
     } else {
-      dataQuery += 'ID ASC ';
+      dataQuery += 'idkpi ASC ';
     }
 
     // Set always an start for data
@@ -75,11 +80,7 @@ rutas.route('/')
     dataParams = dataParams.concat(countParams);
 
     dbQuery(dataQuery + countQuery, dataParams, function (err, rows) {
-      if (err) {
-        printLog(err);
-        res.status(500).send({code: 500, msg: 'Internal Server Error', dev: err});
-        return;
-      }
+      if (err) return ResponseUtils.sendInternalServerError(res, err, rows);
 
       rows = rows || [{}];
 

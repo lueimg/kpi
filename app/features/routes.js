@@ -3,12 +3,10 @@
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $locationProvider.html5Mode(false).hashPrefix('');
       $routeProvider
-        .when('/', {
-          template: require('./records/records.html'),
-          controller: 'RecordsCtrl'
-        });
-
-        
+        .when('/', { template: "<kpi-component></kpi-component>" })
+        .when('/kpi', { template: "<kpi-component></kpi-component>" })
+        .when('/kpi/create', { template: "<kpi-form-component></kpi-form-component>" })
+        .when('/kpi/:id', { template: "<kpi-form-component></kpi-form-component>" });
 
     }]);
 })();

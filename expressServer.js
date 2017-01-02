@@ -5,14 +5,14 @@ var express = require('express'),
     passport = require('passport'),
     session = require('express-session'),
     LocalStrategy = require('passport-local').Strategy,
-    connection = require('./server/core/database.js'),
+    connection = require('./express/core/database.js'),
     path = require('path'),
     multipart = require('connect-multiparty'),
     fs = require('fs'),
     mime = require('mime'),
     bcrypt = require('bcrypt'),
-    responseUltis = require('./server/core/ResponseUtils'),
-    configs = require('./server/core/config'),
+    responseUltis = require('./express/core/ResponseUtils'),
+    configs = require('./express/core/config'),
     logger = require('morgan'),
     compression = require('compression'),
     port = configs.PORT;
@@ -44,11 +44,11 @@ global.dbQuery = function () {
 };
 
 // config file
-require('./server/core/express-config.js')(app, express, bodyParser, multipart);
+require('./express/core/express-config.js')(app, express, bodyParser, multipart);
 
 if (configs.authenticationActive) {
   //Authentication module
-require('./server/core/authentication.js')(app, passport, LocalStrategy, cookieParser, session, connection, bcrypt);
+require('./express/core/authentication.js')(app, passport, LocalStrategy, cookieParser, session, connection, bcrypt);
 
 }
 
@@ -59,7 +59,7 @@ app.get('/', function (req, res) {
 
     res.sendFile(path.join(__dirname+'/public/_index.html'));
   } catch (err){
-    responseUltis.sendInternalServerError(res, err);
+    responseUltis.sendInternalexpressError(res, err);
   }
 });
 
@@ -75,12 +75,16 @@ app.use(function (req, res, next) {
     }
     next();
   } else {
-    responseUltis.SessionHasExpired(res);
+    if (configs.authenticationActive) 
+      responseUltis.SessionHasExpired(res);
+    else 
+    next();
+
   }
 });
 
 // End points
-app.use('/Api/Document', require('./server/features/document.js'));
+app.use('/Api/kpi', require('./express/features/kpi.js'));
 
 
 app.use(function (request, response) {
@@ -89,7 +93,7 @@ app.use(function (request, response) {
 });
 
 app.listen(port, function () {
-  console.log('Public server  running at port ' + port);
+  console.log('Public express  running at port ' + port);
   console.log('http://localhost:' + port);
   console.log('\tAT:' + new Date());
 });

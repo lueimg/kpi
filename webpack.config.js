@@ -49,11 +49,11 @@ module.exports = {
            $: "jquery",
            jQuery: "jquery"
        }),
-       new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        }),
+    //    new webpack.optimize.UglifyJsPlugin({
+    //         compress: {
+    //             warnings: false
+    //         }
+    //     }),
         //new UnminifiedWebpackPlugin()
         new HtmlWebpackPlugin({  // Also generate a test.html
             filename: '_index.html',

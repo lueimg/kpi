@@ -10,6 +10,6 @@ module.exports = {
   mysql_port: '8889',
   mysql_user: 'root',
   mysql_password: '123',
-  mysql_database: 'superenvios',
+  mysql_database: 'kpi',
   authenticationActive: false
 };
