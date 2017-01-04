@@ -1,4 +1,4 @@
-import "./theme/plugins/jQuery/jQuery-2.1.4.min.js";
+import "jquery";
 import "./vendor/angular/angular.min.js";
 import "./vendor/angular-animate/angular-animate.min.js";
 import "./vendor/angular-cookies/angular-cookies.min.js";

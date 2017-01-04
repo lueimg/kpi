@@ -93,54 +93,27 @@ rutas.route('/')
     });
   })
   .post(function (req, res) {
-    var clientBP = req.body,
-        client = {};
+    var kpiData = req.body,
+        kpi = {};
 
-    client.description = clientBP.description;
-    client.legacy_id = clientBP.legacy_id || null;
+    kpi.nombre = kpiData.nombre;
+    kpi.clasificacion = kpiData.clasificacion;
 
-    // Set default values
-    client.status = 1;
-    client.created_at = new Date();
-    client.created_by = req.user && req.user.id || -1;
+    dbQuery('INSERT INTO kpi SET ?;', kpi, function (err, result) {
+      if (err) return ResponseUtils.sendInternalServerError(res, err, rows);
 
-    dbQuery('INSERT INTO CLIENTS SET ?;', client, function (err, result) {
-      var userClient = {};
+      res.json({result: {code: '001', message: 'ok'}});
 
-      if (err) {
-        printLog(err);
-        res.status(500).send({code: 500, msg: 'Internal Server Error', dev: err});
-        return;
-      } else {
-        // Assign the client created to the user that created it
-        userClient.user_id = req.user && req.user.id || -1;
-        userClient.client_id = result.insertId;
-        userClient.status = 1;
-
-        dbQuery('INSERT INTO USERS_CLIENTS SET ?;', userClient, function (err) {
-          if (err) {
-            printLog(err);
-            res.status(500).send({code: 500, msg: 'Internal Server Error', dev: err});
-            return;
-          } else {
-            res.json({result: {code: '001', message: 'ok', id: userClient.client_id}});
-          }
-        });
-      }
     });
   });
 
 rutas.route('/:id')
   .get(function (req, res) {
-    var client_id = req.params.id,
-        query = 'SELECT * FROM CLIENTS WHERE ID = ?';
+    var idkpi = req.params.id,
+        query = 'SELECT * FROM kpi WHERE idkpi = ?';
 
-    dbQuery(query, [client_id], function (err, rows) {
-      if (err) {
-        printLog(err);
-        res.status(500).send({code: 500, msg: 'Internal Server Error', dev: err});
-        return;
-      }
+    dbQuery(query, [idkpi], function (err, rows) {
+       if (err) return ResponseUtils.sendInternalServerError(res, err, rows);
 
       rows = rows || [{}];
 
@@ -148,23 +121,17 @@ rutas.route('/:id')
     });
   })
   .put(function (req, res) {
-    var id = req.params.id,
-        clientBP = req.body,
-        client = {};
+    var idkpi = req.params.id,
+        kpiData = req.body,
+        kpi = {};
 
-    client.legacy_id = clientBP.legacy_id || null;
-    client.description = clientBP.description;
-    // Set default values
-    client.updated_at = new Date();
-    client.updated_by = req.user && req.user.id || -1;
+    kpi.nombre = kpiData.nombre;
+    kpi.clasificacion = kpiData.clasificacion;
+    
 
-    dbQuery('UPDATE CLIENTS SET ? WHERE ID = ?;', [client, id],
+    dbQuery('UPDATE kpi SET ? WHERE idkpi = ?;', [kpi, idkpi],
       function (err) {
-        if (err) {
-          printLog(err);
-          res.status(500).send({code: 500, msg: 'Internal Server Error', dev: err});
-          return;
-        }
+        if (err) return ResponseUtils.sendInternalServerError(res, err, rows);
 
         res.json({result: {code: '001', message: 'ok'}});
       });

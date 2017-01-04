@@ -14,7 +14,7 @@
       'mgcrea.ngStrap',
       'doc.features',
       // 'ui.select',
-      // 'ui.bootstrap'
+      'ui.bootstrap'
     ]);
   angular.module('doc.features', []);
   angular.module('documentarioApp')

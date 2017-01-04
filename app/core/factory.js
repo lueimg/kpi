@@ -1,10 +1,10 @@
-(function () {
+
   angular
     .module('doc.features')
   /**
    * Show notification using angular strap
    */
-    .factory('notification', function ($alert) {
+    .factory('notification', ['$alert', function ($alert) {
       return {
         // @todo : it sounds cool :D but seriously it would be better XD
         great: function (message) {
@@ -52,7 +52,7 @@
           });
         }
       };
-    })
+    }])
     .factory('CurrentUser', ['$resource', function ($resource) {
       var CurrentUser = $resource('/Auth', {});
 
@@ -78,4 +78,4 @@
 
       return CurrentUser;
     }]);
-})();
+

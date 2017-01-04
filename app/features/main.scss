@@ -117,3 +117,32 @@ $required-marker-color: #b94a48;
   -ms-transform:scale(1,2); /* IE 9 */
   -o-transform:scale(1,2); /* Opera */
 }
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+  background-color: #0154a0;
+}
+@media (max-width: 767px) {
+ 
+  .skin-blue .main-header .navbar .dropdown-menu li a:hover {
+    background: #0154a0;
+  }
+}
+
+.skin-blue .main-header .logo {
+  background-color: #0154a0;
+
+}
+
+.skin-blue-light .main-header .navbar .sidebar-toggle:hover {
+  background-color: #0154a0;
+}
+
+@media (max-width: 767px) {
+  .skin-blue-light .main-header .navbar .dropdown-menu li a:hover {
+    background: #0154a0;
+  }
+}
+
+.skin-blue .main-header .navbar {
+    background-color: #0154a0;
+}

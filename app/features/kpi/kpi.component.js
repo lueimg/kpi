@@ -1,13 +1,13 @@
-function KpiComponentCtrl(notification) {
-    var ctrl = this;
+var KpiComponentCtrl = function (notification) {
+    var vm = this;
 
-    ctrl.searchKey = '';
-    ctrl.toDelete = {
+    vm.searchKey = '';
+    vm.toDelete = {
         id: 0,
         nombre: '',
         clasificacion: ''
     };
-    ctrl.colDef = [
+    vm.colDef = [
         {
             columnHeaderDisplayName: 'id',
             displayProperty: 'idkpi',
@@ -36,7 +36,7 @@ function KpiComponentCtrl(notification) {
         }
     ];
 
-    ctrl.tableConfig = {
+    vm.tableConfig = {
         url: 'Api/kpi',
         method: 'get',
         params:{
@@ -54,17 +54,17 @@ function KpiComponentCtrl(notification) {
         }
     };
 
-    ctrl.confirmDelete = function (item) {
-        ctrl.toDelete.id = item.idkpi;
-        ctrl.toDelete.nombre = item.nombre;
-        ctrl.toDelete.clasificacion = item.clasificacion;
+    vm.confirmDelete = function (item) {
+        vm.toDelete.id = item.idkpi;
+        vm.toDelete.nombre = item.nombre;
+        vm.toDelete.clasificacion = item.clasificacion;
 
         angular.element('#deleteModal').modal();
     };
 
-    ctrl.deleteClient = function (idkpi) {
+    vm.deleteClient = function (idkpi) {
         Client.delete({idkpi: idkpi}, function () {
-        ctrl.tableConfig.params.reload = !ctrl.tableConfig.params.reload;
+        vm.tableConfig.params.reload = !vm.tableConfig.params.reload;
         notification.great('Eliminado correctamente.');
         }, function (error) {
         var message = error.data && error.data.results && error.data.results.message ||
@@ -73,8 +73,8 @@ function KpiComponentCtrl(notification) {
         });
     };
 
-    ctrl.search = function () {
-        ctrl.tableConfig.params.nombre = ctrl.searchKey;
+    vm.search = function () {
+        vm.tableConfig.params.nombre = vm.searchKey;
     };
 
 

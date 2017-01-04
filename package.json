@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "forever -w expressServer",
+    "start": "forever -w expressServer",
     "dev": "webpack -w",
-    "build": "webpack",
-    "install": "npm isntall && bower install && webpack"
+    "build": "webpack --config webpack.config.prod.js -p",
+    "install": "npm install && bower install && webpack"
   },
   "keywords": [],
   "author": "",

@@ -45,25 +45,26 @@ module.exports = {
 
     plugins: [
       new ProgressBarPlugin(),
+      new webpack.optimize.DedupePlugin(),
       new webpack.ProvidePlugin({
            $: "jquery",
            jQuery: "jquery",
            "window.jQuery": "jquery"
        }),
-    //    new webpack.optimize.UglifyJsPlugin({
-    //         compress: {
-    //             warnings: false
-    //         }
-    //     }),
+       new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        }),
         //new UnminifiedWebpackPlugin(),
         new HtmlWebpackPlugin({  // Also generate a test.html
-            filename: 'index.html',
+            filename: '_index.html',
             inject: false,
             template: APP + '/template-index.html'
         }),
-        new LiveReloadPlugin({
-            appendScriptTag: true
-        })
+        // new LiveReloadPlugin({
+        //     appendScriptTag: true
+        // })
       
 
   ],

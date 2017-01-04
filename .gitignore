@@ -45,3 +45,5 @@ public/
 public/*.map
 public/app.js
 public/vendors.js
+
+phpserver/vendor
