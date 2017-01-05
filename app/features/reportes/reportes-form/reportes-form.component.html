@@ -2,22 +2,22 @@
     <div class="col-md-12">
         <div class="box box-info">
             <div class="box-header with-border"
-                 ng-switch="!!$ctrl.kpi.id">
+                 ng-switch="!!$ctrl.reportes.id">
                 <h3 class="box-title"
-                    ng-switch-when="false">Creación de Kpi</h3>
+                    ng-switch-when="false">Creación de Reporte</h3>
                 <h3 class="box-title"
-                    ng-switch-when="true">Edición de Kpi</h3>
+                    ng-switch-when="true">Edición de Reporte</h3>
             </div>
             <form class="form-horizontal" name="form" validate>
                 <div class="box-body">
                     <div class="form-group"
-                         ng-show="!!$ctrl.kpi.id">
+                         ng-show="!!$ctrl.reportes.id">
                         <label for="descripcion"
                                class="col-sm-2 control-label">
                             Código
                         </label>
                         <div class="col-sm-10">
-                            <p class="form-control-static">{{ $ctrl.kpi.id | leftPad }}</p>
+                            <p class="form-control-static">{{ $ctrl.reportes.id | leftPad }}</p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -28,7 +28,7 @@
                             <input type="text" class="form-control" id="descripcion" placeholder="Nombre"
                                    required
                                    maxlength="500"
-                                   ng-model="$ctrl.kpi.nombre"
+                                   ng-model="$ctrl.reportes.nombre"
                                    data-auto-focus>
                         </div>
                     </div>
@@ -40,7 +40,7 @@
                                    class="form-control"
                                    id="legacy_id"
                                    placeholder="ID del sistema original"
-                                   ng-model="$ctrl.kpi.clasificacion">
+                                   ng-model="$ctrl.reportes.clasificacion">
                         </div>
                     </div>
                 </div>

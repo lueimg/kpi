@@ -1,8 +1,8 @@
 (function () {
   angular
     .module('doc.features')
-    .factory('Kpi', ['$resource', function ($resource) {
-      var Kpi = $resource('/Api/kpi/:idkpi', {idkpi: '@idkpi'},
+    .factory('Reportes', ['$resource', 'servicesConfig', function ($resource, ServicesConfig) {
+      var Reportes = $resource(ServicesConfig.url + '/reportes/:id', {id: '@id'},
         {
           query: {
             isArray: false
@@ -12,6 +12,6 @@
           }
         });
 
-      return Kpi;
+      return Reportes;
     }]);
 })();

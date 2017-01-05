@@ -3,10 +3,10 @@
     .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $locationProvider.html5Mode(false).hashPrefix('');
       $routeProvider
-        .when('/', { template: "<kpi-component></kpi-component>" })
-        .when('/kpi', { template: "<kpi-component></kpi-component>" })
-        .when('/kpi/create', { template: "<kpi-form-component></kpi-form-component>" })
-        .when('/kpi/:id', { template: "<kpi-form-component></kpi-form-component>" });
+        .when('/', { template: "<reportes-component></reportes-component>" })
+        .when('/reportes', { template: "<reportes-component></reportes-component>" })
+        .when('/reportes/create', { template: "<reportes-form-component></reportes-form-component>" })
+        .when('/reportes/:id', { template: "<kpi-form-component></kpi-form-component>" });
 
     }]);
 })();

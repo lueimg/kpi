@@ -1,4 +1,4 @@
-var KpiComponentCtrl = function (notification) {
+var ReportesComponentCtrl = function (notification, ServicesConfig) {
     var vm = this;
 
     vm.searchKey = '';
@@ -10,18 +10,18 @@ var KpiComponentCtrl = function (notification) {
     vm.colDef = [
         {
             columnHeaderDisplayName: 'id',
-            displayProperty: 'idkpi',
+            displayProperty: 'id',
             sortKey: 'id',
             width: '6em'
         },
         {
             columnHeaderDisplayName: 'Nombre',
-            displayProperty: 'nombre',
-            sortKey: 'nombre'
+            displayProperty: 'name',
+            sortKey: 'name'
         },
         {
-            columnHeaderDisplayName: 'Clasificación',
-            displayProperty: 'clasificacion',
+            columnHeaderDisplayName: 'Sub Reportes',
+            template: '{{item.subreportes}}',
             sortKey: 'clasificacion'
         },
         {
@@ -37,7 +37,7 @@ var KpiComponentCtrl = function (notification) {
     ];
 
     vm.tableConfig = {
-        url: 'Api/kpi',
+        url: ServicesConfig.url + '/reportes',
         method: 'get',
         params:{
             reload: false
@@ -49,21 +49,20 @@ var KpiComponentCtrl = function (notification) {
         }
         },
         state: {
-        sortKey: 'idkpi',
+        sortKey: 'id',
         sortDirection: 'ASC'
         }
     };
 
     vm.confirmDelete = function (item) {
-        vm.toDelete.id = item.idkpi;
+        vm.toDelete.id = item.id;
         vm.toDelete.nombre = item.nombre;
-        vm.toDelete.clasificacion = item.clasificacion;
 
         angular.element('#deleteModal').modal();
     };
 
-    vm.deleteClient = function (idkpi) {
-        Client.delete({idkpi: idkpi}, function () {
+    vm.deleteClient = function (idreportes) {
+        Client.delete({id: idreportes}, function () {
         vm.tableConfig.params.reload = !vm.tableConfig.params.reload;
         notification.great('Eliminado correctamente.');
         }, function (error) {
@@ -74,14 +73,14 @@ var KpiComponentCtrl = function (notification) {
     };
 
     vm.search = function () {
-        vm.tableConfig.params.nombre = vm.searchKey;
+        vm.tableConfig.params.name = vm.searchKey;
     };
 
 
 }
 
-angular.module('doc.features').component('kpiComponent', {
-  template: require('./kpi.component.html'),
-  controller: ['notification', KpiComponentCtrl],
+angular.module('doc.features').component('reportesComponent', {
+  template: require('./reportes.component.html'),
+  controller: ['notification', 'ServicesConfig', ReportesComponentCtrl],
   bindings: {}
 });

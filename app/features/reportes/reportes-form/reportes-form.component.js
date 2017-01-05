@@ -1,7 +1,7 @@
-function KpiFormComponentCtrl($filter, $location, $routeParams, Kpi,notification) {
+function ReportesFormComponentCtrl($filter, $location, $routeParams, Reportes,notification) {
   var vm = this;
 
-  var idkpi = $routeParams.id,
+  var id = $routeParams.id,
       successHandler = function () {
         vm.isDisabled = false;
         vm.backToList();
@@ -18,24 +18,24 @@ function KpiFormComponentCtrl($filter, $location, $routeParams, Kpi,notification
 
   vm.isDisabled = false;
 
-  if (idkpi) {
-    vm.kpi = Kpi.get({idkpi: idkpi});
+  if (id) {
+    vm.reportes = reportes.get({id: id});
   } else {
-    vm.kpi = new Kpi();
+    vm.reportes = new Reportes();
   }
 
   vm.backToList = function () {
-    $location.path('/kpi');
+    $location.path('/reportes');
   };
 
   vm.save = function (form) {
     vm.isDisabled = true;
     if (preValidation()) {
       if (form.$valid) {
-        if (!idkpi) {
-          vm.kpi.$save(successHandler, errorHandler);
+        if (!id) {
+          vm.reportes.$save(successHandler, errorHandler);
         } else {
-          vm.kpi.$update({idkpi: idkpi}, successHandler, errorHandler);
+          vm.reportes.$update({id: id}, successHandler, errorHandler);
         }
       } else {
         vm.isDisabled = false;
@@ -46,12 +46,14 @@ function KpiFormComponentCtrl($filter, $location, $routeParams, Kpi,notification
   };
 }
 
-angular.module('doc.features').component('kpiFormComponent', {
-  template: require('./kpi-form.component.html'),
+angular.module('doc.features').component('reportesFormComponent', {
+  template: require('./reportes-form.component.html'),
   controller: [
     '$filter',
     '$location',
-    '$routeParams', 'Kpi',
-    'notification', KpiFormComponentCtrl],
+    '$routeParams', 
+    'Reportes',
+    'notification', 
+    ReportesFormComponentCtrl],
   bindings: {}
 });

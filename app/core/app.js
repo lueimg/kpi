@@ -16,7 +16,10 @@
       // 'ui.select',
       'ui.bootstrap'
     ]);
-  angular.module('doc.features', []);
+  angular.module('doc.features', [])
+  .constant("ServicesConfig", {
+    "url": "http://localhost:8888/kpi/phpserver/Api"
+  });
   angular.module('documentarioApp')
   /**
    * Decorate $resource so we can add in common functionality.
