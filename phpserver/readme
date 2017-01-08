@@ -1,0 +1,8 @@
+* configurar apache con override all virtual host
+
+# reports
+#######
+CREATE SEQUENCE kpi_reports_seq START WITH 1;
+-- insert into KPI_REPORTS values( kpi_reports_seq.nextval, 'test')
+CREATE SEQUENCE kpi_subreports_seq START WITH 1;
+#####

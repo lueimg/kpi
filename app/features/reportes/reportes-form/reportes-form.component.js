@@ -1,10 +1,9 @@
-function ReportesFormComponentCtrl($filter, $location, $routeParams, Reportes,notification) {
+function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc,notification) {
   var vm = this;
-
   var id = $routeParams.id,
       successHandler = function () {
         vm.isDisabled = false;
-        vm.backToList();
+         vm.backToList();
         notification.great('Guardado correctamente');
       },
       errorHandler = function (err) {
@@ -19,10 +18,27 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, Reportes,no
   vm.isDisabled = false;
 
   if (id) {
-    vm.reportes = reportes.get({id: id});
+    vm.reporte = ReportesSvc.get({id: id});
   } else {
-    vm.reportes = new Reportes();
+    vm.reporte = new ReportesSvc();
   }
+
+
+
+
+  vm.reporte.subreports = [];
+
+  vm.addSubReport = function () {
+    vm.reporte.subreports.push('');
+  };
+  vm.removeSubReport = function (index) {
+ 
+    vm.reporte.subreports.splice(index, 1);
+  };
+
+
+
+
 
   vm.backToList = function () {
     $location.path('/reportes');
@@ -33,9 +49,9 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, Reportes,no
     if (preValidation()) {
       if (form.$valid) {
         if (!id) {
-          vm.reportes.$save(successHandler, errorHandler);
+          vm.reporte.$save(successHandler, errorHandler);
         } else {
-          vm.reportes.$update({id: id}, successHandler, errorHandler);
+          vm.reporte.$update({id: id}, successHandler, errorHandler);
         }
       } else {
         vm.isDisabled = false;
@@ -52,7 +68,7 @@ angular.module('doc.features').component('reportesFormComponent', {
     '$filter',
     '$location',
     '$routeParams', 
-    'Reportes',
+    'ReportesSvc',
     'notification', 
     ReportesFormComponentCtrl],
   bindings: {}

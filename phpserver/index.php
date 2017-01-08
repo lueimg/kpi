@@ -1,11 +1,23 @@
 <?php
 // base on https://github.com/progknife/slim3-rest
 require 'vendor/autoload.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-use Psr\Http\Message\RequestInterface as Request;
+$configuration = [
+    'settings' => [
+        'displayErrorDetails' => true,
+    ],
+];
+$c = new \Slim\Container($configuration);
+
+// use Psr\Http\Message\RequestInterface as Request;
+// use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
-$app = new \Slim\App();
+$app = new \Slim\App($c);
 
 /**
  * Formats string to StudlyCaps using delimiter to determine the next word and

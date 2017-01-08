@@ -10,18 +10,18 @@ var ReportesComponentCtrl = function (notification, ServicesConfig) {
     vm.colDef = [
         {
             columnHeaderDisplayName: 'id',
-            displayProperty: 'id',
-            sortKey: 'id',
+            displayProperty: 'ID',
+            sortKey: 'ID',
             width: '6em'
         },
         {
             columnHeaderDisplayName: 'Nombre',
-            displayProperty: 'name',
-            sortKey: 'name'
+            displayProperty: 'NAME',
+            sortKey: 'NAME'
         },
         {
             columnHeaderDisplayName: 'Sub Reportes',
-            template: '{{item.subreportes}}',
+            template: '{{item.SUBREPORTS  || 0}}',
             sortKey: 'clasificacion'
         },
         {
@@ -37,7 +37,7 @@ var ReportesComponentCtrl = function (notification, ServicesConfig) {
     ];
 
     vm.tableConfig = {
-        url: ServicesConfig.url + '/reportes',
+        url: ServicesConfig.url + '/reports',
         method: 'get',
         params:{
             reload: false
@@ -75,7 +75,6 @@ var ReportesComponentCtrl = function (notification, ServicesConfig) {
     vm.search = function () {
         vm.tableConfig.params.name = vm.searchKey;
     };
-
 
 }
 

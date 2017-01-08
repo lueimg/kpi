@@ -18,7 +18,7 @@
     ]);
   angular.module('doc.features', [])
   .constant("ServicesConfig", {
-    "url": "http://localhost:8888/kpi/phpserver/Api"
+    "url": "phpserver"
   });
   angular.module('documentarioApp')
   /**

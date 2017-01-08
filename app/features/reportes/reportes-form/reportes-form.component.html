@@ -2,47 +2,56 @@
     <div class="col-md-12">
         <div class="box box-info">
             <div class="box-header with-border"
-                 ng-switch="!!$ctrl.reportes.id">
+                 ng-switch="!!$ctrl.reporte.id">
                 <h3 class="box-title"
-                    ng-switch-when="false">Creación de Reporte</h3>
+                    ng-switch-when="false">Creación de Reportes</h3>
                 <h3 class="box-title"
-                    ng-switch-when="true">Edición de Reporte</h3>
+                    ng-switch-when="true">Edición de Reportes</h3>
             </div>
             <form class="form-horizontal" name="form" validate>
                 <div class="box-body">
                     <div class="form-group"
-                         ng-show="!!$ctrl.reportes.id">
+                         ng-show="!!$ctrl.reporte.id">
                         <label for="descripcion"
                                class="col-sm-2 control-label">
                             Código
                         </label>
                         <div class="col-sm-10">
-                            <p class="form-control-static">{{ $ctrl.reportes.id | leftPad }}</p>
+                            <p class="form-control-static">{{ $ctrl.reporte.id | leftPad }}</p>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="descripcion"
                                class="col-sm-2 control-label"
-                               required-field>Nombre</label>
+                               required-field>Nombre: </label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="descripcion" placeholder="Nombre"
                                    required
                                    maxlength="500"
-                                   ng-model="$ctrl.reportes.nombre"
+                                   ng-model="$ctrl.reporte.name"
                                    data-auto-focus>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="legacy_id" class="col-sm-2 control-label">Clasificación</label>
+                        <label for="descripcion"
+                               class="col-sm-2 control-label">Sub Reportes: </label>
                         <div class="col-sm-10">
-                            <input type="text"
-                                   maxlength="500"
-                                   class="form-control"
-                                   id="legacy_id"
-                                   placeholder="ID del sistema original"
-                                   ng-model="$ctrl.reportes.clasificacion">
+                            <div class="row">
+                                <div class="col-sm-12" ng-repeat="item in $ctrl.reporte.subreports track by $index">
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" required ng-model="$ctrl.reporte.subreports[$index]">
+                                </div>
+                                <div class="col-sm-6"> 
+                                    <a  ng-click="$ctrl.removeSubReport($index)"> <i class="fa fa-trash"></i></a>
+                                </div>
+                            </div>  
+                            </div>
+                            <div class="col-sm-3">
+                                 <a class="btn btn-block btn-success btn-sm"  ng-click="$ctrl.addSubReport()">Agregar Sub Reporte</a>
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
                 <div class="box-footer">
                     <button type="submit" class="btn btn-info pull-right" ng-click="$ctrl.save(form)">Guardar</button>
@@ -52,3 +61,4 @@
         </div>
     </div>
 </div>
+

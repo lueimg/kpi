@@ -136,6 +136,15 @@ abstract class Controller
     {
         return $this->response;
     }
+    public  function getAttribute($attr)
+    {
+        // return $this->request->getParsedBody();
+        // return $this->request->getParam("id");
+        // return $this->request->getParams();
+        // return $this->request->getParsedBody();
+        // return $this->request->getBody();
+        return $this->request;
+    }
 
     /**
      * Collects the URL segments from route and builds a numeric array with the

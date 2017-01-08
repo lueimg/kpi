@@ -1,17 +1,16 @@
-(function () {
-  angular
-    .module('doc.features')
-    .factory('Reportes', ['$resource', 'servicesConfig', function ($resource, ServicesConfig) {
-      var Reportes = $resource(ServicesConfig.url + '/reportes/:id', {id: '@id'},
-        {
-          query: {
-            isArray: false
-          },
-          update: {
-            method: 'PUT'
-          }
-        });
 
-      return Reportes;
-    }]);
-})();
+angular
+  .module('doc.features')
+  .factory('ReportesSvc', ['$resource','ServicesConfig', function ($resource, ServicesConfig) {
+    var Reportes = $resource(ServicesConfig.url + '/Reports/:id', {id: '@id'},
+      {
+        query: {
+          isArray: false
+        },
+        update: {
+          method: 'PUT'
+        }
+      });
+
+    return Reportes;
+  }]);
