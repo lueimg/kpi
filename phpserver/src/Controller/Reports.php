@@ -19,7 +19,18 @@ class Reports extends Controller
 
     protected function getAction($request, $response)
     {
-        return $this->model->fetchAll();
+        $report_id = $this->getUrlSegment(1);
+        $results = array();
+
+        // listado
+        if (!$report_id) 
+            $results = $this->model->fetchAll();
+        else {
+            // Seleccion por id
+            $results = $this->model->fetchById($report_id);
+        }
+
+        return $response->withJson($results, $results['status']);
     }
 
     /**
@@ -31,14 +42,24 @@ class Reports extends Controller
      */
     protected function postAction($request , $response)
     {
-        // return $this->request->getParsedBody();
-        // return $this->request->getParam("id");
-        // return $this->request->getParams();
-        // return $this->request->getParsedBody();
-        // return $this->request->getBody();
-       
         $data = $request->getParams();
-        return $this->model->save((object)$data);
+        $results =  $this->model->save((object)$data);
+        return $response->withJson($results, $results['status']);
+    }
+
+    protected function putAction($request, $response)
+    {
+        $data = $request->getParams();
+        $results = $this->model->update((object)$data);
+        return $response->withJson($results, $results['status']);
+
+    }
+    
+    protected function deleteAction($request, $response)
+    {
+        $report_id = $this->getUrlSegment(1);
+        $results = $this->model->delete($report_id);
+        return $response->withJson($results, $results['status']);
     }
 
 }

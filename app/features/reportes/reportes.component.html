@@ -58,13 +58,13 @@
                 <h4 class="modal-title" id="myModalLabel">Confirmar eliminación</h4>
             </div>
             <div class="modal-body">
-                Seguro que desea eliminar el cliente: {{ $ctrl.toDelete.description }}
+                Seguro que desea eliminar el REPORTE: {{ $ctrl.toDelete.NAME }}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
                 <button type="button"
                         class="btn btn-danger"
-                        ng-click="$ctrl.deleteClient(toDelete.id)"
+                        ng-click="$ctrl.delete($ctrl.toDelete.ID)"
                         data-dismiss="modal">
                     Eliminar
                 </button>

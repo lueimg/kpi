@@ -1,4 +1,4 @@
-var ReportesComponentCtrl = function (notification, ServicesConfig) {
+var ReportesComponentCtrl = function (notification, ServicesConfig, ReportesSvc) {
     var vm = this;
 
     vm.searchKey = '';
@@ -55,14 +55,15 @@ var ReportesComponentCtrl = function (notification, ServicesConfig) {
     };
 
     vm.confirmDelete = function (item) {
-        vm.toDelete.id = item.id;
-        vm.toDelete.nombre = item.nombre;
+        vm.toDelete.ID = item.ID;
+        vm.toDelete.NAME = item.NAME;
 
         angular.element('#deleteModal').modal();
     };
 
-    vm.deleteClient = function (idreportes) {
-        Client.delete({id: idreportes}, function () {
+    vm.delete = function (id) {
+        console.log(id);
+        ReportesSvc.delete({ID: id}, function () {
         vm.tableConfig.params.reload = !vm.tableConfig.params.reload;
         notification.great('Eliminado correctamente.');
         }, function (error) {
@@ -80,6 +81,6 @@ var ReportesComponentCtrl = function (notification, ServicesConfig) {
 
 angular.module('doc.features').component('reportesComponent', {
   template: require('./reportes.component.html'),
-  controller: ['notification', 'ServicesConfig', ReportesComponentCtrl],
+  controller: ['notification', 'ServicesConfig', 'ReportesSvc', ReportesComponentCtrl],
   bindings: {}
 });

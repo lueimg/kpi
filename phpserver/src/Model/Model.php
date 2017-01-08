@@ -76,18 +76,23 @@ abstract class Model
     {
         $query= "SELECT $this->seq.currval id FROM dual";
         return $this->getList($query)[0]->ID;
-
     }
 
 
     public function insert($query)
     {
-        $response = $this->execQuery($query);
-        if ($response) {
-            return $this->getLastId();
-        }
+        $result = $this->execQuery($query);
+        if ($result)  return $this->getLastId();
         
-        return $response;
+        return $result;
+    }
+
+    public function jsonResponse($data, $status = 500)
+    {
+        return [
+            "status" => $status,
+            "results" => $data
+        ];
     }
 
 }

@@ -3,7 +3,7 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
   var id = $routeParams.id,
       successHandler = function () {
         vm.isDisabled = false;
-         vm.backToList();
+        vm.backToList();
         notification.great('Guardado correctamente');
       },
       errorHandler = function (err) {
@@ -14,19 +14,16 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
       
         return true;
       };
-
+      
   vm.isDisabled = false;
-
-  if (id) {
-    vm.reporte = ReportesSvc.get({id: id});
-  } else {
-    vm.reporte = new ReportesSvc();
-  }
-
-
-
-
+  vm.reporte = new ReportesSvc();
   vm.reporte.subreports = [];
+  if (id) {
+    ReportesSvc.get({ID: id}, function (res) {
+      vm.reporte = res.results;
+      vm.reporte.subreports = vm.reporte.subreports || [];
+    });
+  } 
 
   vm.addSubReport = function () {
     vm.reporte.subreports.push('');
@@ -35,10 +32,6 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
  
     vm.reporte.subreports.splice(index, 1);
   };
-
-
-
-
 
   vm.backToList = function () {
     $location.path('/reportes');
@@ -51,7 +44,7 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
         if (!id) {
           vm.reporte.$save(successHandler, errorHandler);
         } else {
-          vm.reporte.$update({id: id}, successHandler, errorHandler);
+         ReportesSvc.update(vm.reporte, successHandler, errorHandler);
         }
       } else {
         vm.isDisabled = false;
