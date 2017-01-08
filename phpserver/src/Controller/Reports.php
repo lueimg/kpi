@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Model\Reportes as ReportesModel;
+use App\Model\Reports as ReportsModel;
 
-class Reportes extends Controller
+class Reports extends Controller
 {
     /**
      * Get all books.
@@ -15,7 +15,7 @@ class Reportes extends Controller
      */
     protected function getAction($request, $response)
     {
-        $reportes = new ReportesModel();
+        $reportes = new ReportsModel();
 
         return $reportes->fetchAll();
     }

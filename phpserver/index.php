@@ -47,7 +47,7 @@ $app->add(function (Request $request, Response $response, callable $next) {
  * request method.
  *
  */
-$app->any('/Api/[{controller}[/{segments:.+}]]', function (Request $request, Response $response, $args) {
+$app->any('/[{controller}[/{segments:.+}]]', function (Request $request, Response $response, $args) {
     if (!count($args)) {
         $args['controller'] = strtolower(\App\Controller\Controller::DEFAULT_CONTROLLER);
     }

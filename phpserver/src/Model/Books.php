@@ -24,11 +24,11 @@ class Books extends Model
      */
     public function fetchById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM books WHERE id = ? LIMIT 1");
-        $stmt->execute(array(
-            $id
-        ));
+        // $stmt = $this->pdo->prepare("SELECT * FROM books WHERE id = ? LIMIT 1");
+        // $stmt->execute(array(
+        //     $id
+        // ));
 
-        return $stmt->fetch(\PDO::FETCH_OBJ);
+        // return $stmt->fetch(\PDO::FETCH_OBJ);
     }
 }

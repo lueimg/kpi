@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Model\Books as BooksModel;
+// use App\Model\Books as BooksModel;
 
 class Books extends Controller
 {
@@ -15,7 +15,7 @@ class Books extends Controller
      */
     protected function getAction($request, $response)
     {
-        $books = new BooksModel();
+        // $books = new BooksModel();
 
         return array("a"=>2);
     }

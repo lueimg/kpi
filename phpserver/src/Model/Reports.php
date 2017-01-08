@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class Reportes extends Model
+class Reports extends Model
 {
     /**
      * Get all books.
@@ -11,14 +11,7 @@ class Reportes extends Model
      */
     public function fetchAll($data)
     {
-        $dataQuery = "SELECT * FROM reportes where status = 1 ";
-        $countQuery = "SELECT COUNT(1) AS COUNTER FROM reportes WHERE 1 ";
-
-
-        $stmt = $this->pdo->prepare("s");
-        $stmt->execute();
-
-       return $stmt->fetchAll(\PDO::FETCH_OBJ);
+       return $this->dbQuery("SELECT * FROM KPI_REPORTS");
     }
 
     /**
