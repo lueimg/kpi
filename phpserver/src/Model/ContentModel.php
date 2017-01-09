@@ -66,23 +66,45 @@ class ContentModel extends Model
     public function save($data)
     {   
         $results['error'] = '';
+        $queries_index = array();
         $table = $this->table;
-        $query = "INSERT INTO $table (ID, NAME, REPORT_ID, SUBREPORT_ID) 
-                    VALUES ($this->newId, '$data->NAME', $data->REPORT_ID, $data->SUBREPORT_ID)";
+        $subReportField = $data->SUBREPORT_ID ?  ' , SUBREPORT_ID ' : '';
+        $subReportIdValue =  $data->SUBREPORT_ID ?  ', ' . $data->SUBREPORT_ID : '';
+        $query = "INSERT INTO $table (ID, NAME, REPORT_ID  $subReportField)  VALUES ($this->newId, '$data->NAME', $data->REPORT_ID $subReportIdValue)";
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
+        $contentTableLastId = $this->getLastId();
+        
         if (count($data->queries))
         {   
-            $lastId = $this->getLastId();
-            foreach($data->queries as $key=>$value)
+            foreach($data->queries as $value)
             {
                 $queriesTable = $this->tables->queries->name;
                 $seq = $this->tables->queries->seq;
                 $query = "INSERT INTO $queriesTable (ID, QUERY, CONTENT_ID) 
-                            VALUES ($seq.nextval, '$value', $lastId)";
+                            VALUES ($seq.nextval, '$value', $contentTableLastId)";
+                $results = $this->insert($query, $seq);
+                if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                
+                $queries_index[] = $results;
+            }
+        }
+
+        if (count($data->graphs))
+        {   
+            foreach($data->graphs as $graphic)
+            {
+                $graph = (object)$graphic;
+                $graphicsTable = $this->tables->graphics->name;
+                $seqGraphics = $this->tables->graphics->seq;
+                $seqQuery =  $this->tables->queries->seq;
+                $query_id = $queries_index[$graph->query_index];
+                $query = "INSERT INTO $graphicsTable (ID, QUERY_ID, CONTENT_ID, GRAPHIC_TYPE_ID, UNIDAD) 
+                            VALUES ($seqGraphics.nextval, $query_id, $contentTableLastId, '$graph->graphic_type', '$graph->und')";
+
                 $results = $this->execQuery($query);
-                if ($results['error'])  return $this->jsonResponse($results, 500);
+                if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
             }
         }
         

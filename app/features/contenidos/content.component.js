@@ -29,18 +29,15 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
       else {
          vm.subreports = [];
       }
-
     };
 
     vm.content = new ContentSvc();
     vm.content.queries = [];
     vm.content.graphs = [];
 
-
-
     vm.addQuery = () => vm.content.queries.push('');
     vm.removeQuery = (index) => vm.content.queries.splice(index, 1);
-    vm.addGraph = () => vm.content.graphs.push('');
+    vm.addGraph = () => vm.content.graphs.push({});
     vm.removeGraph = (index) => vm.content.graphs.splice(index, 1);
 
     vm.save = function (form) {
@@ -59,8 +56,6 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
         }
         vm.isDisabled = false;
       };
-
-
 }
 
 angular.module('doc.features').component('contentComponent', {

@@ -30,6 +30,8 @@ abstract class Model
             "subreports" =>   (object) array('name'=> "KPI_SUBREPORTS", 'seq' => 'kpi_subreports_seq'),
             "content" =>   (object) array('name'=> "KPI_CONTENT", 'seq' => 'kpi_content_seq'),
             "queries" =>   (object) array('name'=> "KPI_QUERIES", 'seq' => 'kpi_queries_seq'),
+            "graphics" =>   (object) array('name'=> "KPI_GRAPHICS", 'seq' => 'kpi_graphics_seq'),
+            "series" =>   (object) array('name'=> "KPI_SERIES", 'seq' => 'kpi_series_seq'),
         ];
         
     }
@@ -62,7 +64,7 @@ abstract class Model
 		$r = oci_execute($stid, OCI_NO_AUTO_COMMIT);
 		if (!$r) {
 			$e = oci_error($stid);
-			$result = array('error'=>$e['message']) ;
+			$result = array('error'=>$e['message'], "query"=>$query) ;
 			oci_rollback($this->connection);
 		}
         else
@@ -74,18 +76,23 @@ abstract class Model
     }
 
     // require el uso de sequences
-    public function getLastId()
+    public function getLastId($seq = '')
     {
         // @todo : se debe definir protected $seq, en cada model para usar esta funcion
-        $query= "SELECT $this->seq.currval id FROM dual";
+
+        if ($seq == '') {
+            $seq = $this->seq; // propiedad definida en cada modelo
+        }
+
+        $query= "SELECT $seq.currval id FROM dual";
         return $this->getList($query)[0]->ID;
     }
 
 
-    public function insert($query)
+    public function insert($query, $seq = '')
     {
         $result = $this->execQuery($query);
-        if ($result)  return $this->getLastId();
+        if ($result)  return $this->getLastId($seq);
         
         return $result;
     }
@@ -96,6 +103,11 @@ abstract class Model
             "status" => $status,
             "results" => $data
         ];
+    }
+
+    public function debugger($data) {
+        var_dump($data);
+        die();
     }
 
 }

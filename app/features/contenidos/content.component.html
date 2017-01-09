@@ -93,14 +93,17 @@
                     <div class="col-sm-5">
                         <p>* Debe tener Queries agregados</p>
                     </div>
-                    <div class="field-group col-sm-offset-2 col-sm-9">
-                        <div class="field-group-item with-border-button col-sm-12" ng-repeat="item in $ctrl.content.graphs track by $index">
+                    <div ng-if="$ctrl.content.queries.length > 0" class="field-group col-sm-offset-2 col-sm-9">
+                        <div class="field-group-item with-border-button col-sm-12" ng-repeat="graph in $ctrl.content.graphs track by $index">
                             <div class="col-sm-3">
-                                Usar Query # <select name="" id=""></select>
+                                Usar Query # 
+                                <select name="graph" id="" ng-model="graph.query_index">
+                                    <option ng-repeat="query in $ctrl.content.queries track by $index" value="{{$index}}">{{$index + 1}}</option>
+                                </select>
                             </div>
                             <div class="col-sm-4">
                                 Tipo grafico:
-                                <select name="" id="">
+                                <select name="graphic_type" id="" ng-model="graph.graphic_type">
                                     <option value="lineal">lineal</option>
                                     <option value="Pie">Pie</option>
                                     <option value="Tabal">Tabal</option>
@@ -108,7 +111,7 @@
                             </div>
                             <div class="col-sm-3">
                                 Unidad: 
-                                <input type="text">
+                                <input type="text" ng-model="graph.und">
                             </div>
                             <div class="col-sm-2"> 
                                     <a  ng-click="$ctrl.removeGraph($index)"> <i class="fa fa-trash"></i> Borrar Grafico</a>
