@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class Reports extends Model
+class ContentModel extends Model
 {
     
     protected $newId =  '';
@@ -14,39 +14,26 @@ class Reports extends Model
     {
         parent::__construct();
 
-        $this->seq = $this->tables->reports->seq;
+        $this->seq = $this->tables->content->seq;
+        $this->table = $this->tables->content->name;
 
         $this->newId = $this->seq . '.nextval';
         $this->currentId = $this->seq.'.currval';
-        $this->table = $this->tables->reports->name;
+        
     }
 
     public function fetchAll($data = [])
     {   
-        $table = $this->tables->reports->name;
+        $table = $this->table;
         $subtable = $this->tables->subreports->name;
-        $qList = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS_TOTAL, TOTALS.SUBREPORTS_DATA SUBREPORTS_RAW "  ;
+        $qList = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
-        $qFrom =" FROM $table RE ";
-        // $qJoin1 = " left join ( select SRE.REPORT_ID, count(1) TOTAL FROM $subtable SRE group by SRE.REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
-        $qJoin1 = " LEFT JOIN ( SELECT REPORT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) SUBREPORTS_DATA, COUNT(1) TOTAL FROM  $subtable GROUP BY REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
-        $qOrder =  "ORDER BY RE.ID ASC";
+        $qFrom =" FROM $table RE
+                left join ( select SRE.REPORT_ID, count(1) TOTAL FROM $subtable SRE group by SRE.REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID 
+                ORDER BY RE.ID ASC";
 
-        $list = $this->getList("$qList $qFrom $qJoin1 $qOrder");
-        $count = $this->getList("$qCount $qFrom $qJoin1 $qOrder");
-
-        foreach($list as $report)
-        {
-            $rows = explode("|", $report->SUBREPORTS_RAW);
-            $report->SUBREPORTS_ROWS  = array();
-            foreach($rows as $subreport_data)
-            {   
-               if ($subreport_data) {
-                list($id, $value) = explode("*", $subreport_data);
-                if ($id) $report->SUBREPORTS_ROWS[] = array("ID"=>$id, "NAME"=>$value);
-               }
-            }
-        }
+        $list = $this->getList("$qList $qFrom");
+        $count = $this->getList("$qCount $qFrom");
         
         return [
             "status" => 200,
@@ -55,11 +42,6 @@ class Reports extends Model
                 "list" => $list
             ]
         ];
-    }
-
-    public function fetchAllWithSubreports ()
-    {
-        //
     }
 
      public function fetchById($report_id='')
@@ -84,34 +66,34 @@ class Reports extends Model
     public function save($data)
     {   
         $results['error'] = '';
-        $table = $this->tables->reports->name;
-        $query = "INSERT INTO $table VALUES ($this->newId, '$data->NAME')";
+        $table = $this->table;
+        $query = "INSERT INTO $table (ID, NAME, REPORT_ID, SUBREPORT_ID) 
+                    VALUES ($this->newId, '$data->NAME', $data->REPORT_ID, $data->SUBREPORT_ID)";
         $results = $this->execQuery($query);
-
         if ($results['error']) return $this->jsonResponse($results, 500);
 
-        if (count($data->subreports))
+        if (count($data->queries))
         {   
             $lastId = $this->getLastId();
-            foreach($data->subreports as $key=>$value)
+            foreach($data->queries as $key=>$value)
             {
-                $table = $this->tables->subreports->name;
-                $seq = $this->tables->subreports->seq;
-                $query = "INSERT INTO $table VALUES ($seq.nextval, '$value', $lastId)";
+                $queriesTable = $this->tables->queries->name;
+                $seq = $this->tables->queries->seq;
+                $query = "INSERT INTO $queriesTable (ID, QUERY, CONTENT_ID) 
+                            VALUES ($seq.nextval, '$value', $lastId)";
                 $results = $this->execQuery($query);
-                if ($results['error'])  return $this->results($response, 500);
+                if ($results['error'])  return $this->jsonResponse($results, 500);
             }
         }
         
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-        return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 200);
+        return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 201);
     }
 
     public function update($data)
     {   
         
         $results['error'] = '';
-        $table = $this->tables->reports->name;
+        $table = $this->table;
         $query = "UPDATE $table SET NAME = '$data->NAME' WHERE ID = '$data->ID'";
         $results = $this->execQuery($query);
         if ($results['error'])  return $this->jsonResponse($results, 500);

@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="box box-info">
             <div class="box-header with-border"
-                 ng-switch="!!$ctrl.reporte.ID">
+                 ng-switch="!!$ctrl.content.ID">
                 <h3 class="box-title"
                     ng-switch-when="false">Creación de Contenidos</h3>
                 <h3 class="box-title"
@@ -11,13 +11,13 @@
             <form class="form-horizontal" name="form" validate>
                 <div class="box-body">
                     <div class="form-group"
-                         ng-show="!!$ctrl.reporte.ID">
+                         ng-show="!!$ctrl.content.ID">
                         <label for="descripcion"
                                class="col-sm-2 control-label">
                             Código
                         </label>
                         <div class="col-sm-10">
-                            <p class="form-control-static">{{ $ctrl.reporte.ID | leftPad }}</p>
+                            <p class="form-control-static">{{ $ctrl.content.ID | leftPad }}</p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -29,7 +29,7 @@
                                    required
                                    maxlength="500"
                                    style="width: 60%"
-                                   ng-model="$ctrl.reporte.NAME"
+                                   ng-model="$ctrl.content.NAME"
                                    data-auto-focus>
                         </div>
                     </div>
@@ -39,12 +39,21 @@
                                class="col-sm-2 control-label"
                                required-field>Reporte: </label>
                         <div class="col-sm-3">
-                            <select name="" id=""></select>
+                            <select name="reporte" 
+                                    id="reporte" 
+                                    ng-model="$ctrl.content.REPORT_ID" required
+                                    ng-change="$ctrl.reportChange()">
+                                    <option value="">Seleccione</option>
+                                <option ng-repeat="report in $ctrl.reports" value="{{report.ID}}">{{report.NAME}}</option>
+                            </select>
                         </div>
 
-                        <label for="descripcion" class="col-sm-2 control-label">Sub Reporte: </label>
-                        <div class="col-sm-3">
-                            <select name="" id=""></select>
+                        <label ng-if="$ctrl.subreports.length > 0" for="descripcion" class="col-sm-2 control-label">Sub Reporte: </label>
+                        <div class="col-sm-3"  ng-if="$ctrl.subreports.length > 0">
+                            <select required name="subreport" id="subreport" ng-model="$ctrl.content.SUBREPORT_ID" >
+                                <option value="">Seleccione</option>
+                                <option ng-repeat="item in $ctrl.subreports" value="{{item.ID}}">{{item.NAME}}</option>
+                            </select>
                         </div>
 
                     </div>
@@ -59,12 +68,12 @@
                         </div>
                         <div class="field-group col-sm-offset-2 col-sm-9">
 
-                            <div class="field-group-item col-sm-12" ng-repeat="item in $ctrl.queries track by $index">
+                            <div class="field-group-item col-sm-12" ng-repeat="item in $ctrl.content.queries track by $index">
                                 <div class="col-sm-1">
                                    #{{$index + 1}}
                                 </div>
                                 <div class="col-sm-9">
-                                    <textarea type="text" placeholder="select * from ..." class="form-control" required ng-model="$ctrl.queries[$index]"></textarea>
+                                    <textarea type="text" placeholder="select * from ..." class="form-control" required ng-model="$ctrl.content.queries[$index]"></textarea>
                                 </div>
                                 <div class="col-sm-2"> 
                                     <a  ng-click="$ctrl.removeQuery($index)"> <i class="fa fa-trash"></i></a>
@@ -85,7 +94,7 @@
                         <p>* Debe tener Queries agregados</p>
                     </div>
                     <div class="field-group col-sm-offset-2 col-sm-9">
-                        <div class="field-group-item with-border-button col-sm-12" ng-repeat="item in $ctrl.graphs track by $index">
+                        <div class="field-group-item with-border-button col-sm-12" ng-repeat="item in $ctrl.content.graphs track by $index">
                             <div class="col-sm-3">
                                 Usar Query # <select name="" id=""></select>
                             </div>
@@ -154,4 +163,6 @@
         </div>
     </div>
 </div>
-
+<pre>
+    {{$ctrl.content | json }}
+</pre>

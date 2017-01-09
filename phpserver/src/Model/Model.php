@@ -28,6 +28,8 @@ abstract class Model
         $this->tables = (object) [ 
             "reports" =>   (object) array('name'=> "KPI_REPORTS", 'seq' => 'kpi_reports_seq'),
             "subreports" =>   (object) array('name'=> "KPI_SUBREPORTS", 'seq' => 'kpi_subreports_seq'),
+            "content" =>   (object) array('name'=> "KPI_CONTENT", 'seq' => 'kpi_content_seq'),
+            "queries" =>   (object) array('name'=> "KPI_QUERIES", 'seq' => 'kpi_queries_seq'),
         ];
         
     }
@@ -74,6 +76,7 @@ abstract class Model
     // require el uso de sequences
     public function getLastId()
     {
+        // @todo : se debe definir protected $seq, en cada model para usar esta funcion
         $query= "SELECT $this->seq.currval id FROM dual";
         return $this->getList($query)[0]->ID;
     }
@@ -87,7 +90,7 @@ abstract class Model
         return $result;
     }
 
-    public function jsonResponse($data, $status = 500)
+    public function jsonResponse($data, $status = 200)
     {
         return [
             "status" => $status,
