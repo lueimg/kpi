@@ -105,6 +105,23 @@ class ContentModel extends Model
 
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+
+                // Insert Series
+
+                if (count($graph->series))
+                {   
+                    foreach($graph->series as $serie)
+                    {
+                        $serieObj = (object)$serie;
+                        $seriesTable = $this->tables->series->name;
+                        $seqSeries = $this->tables->series->seq;
+                        $seqGraphic =  $this->tables->graphics->seq;
+                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, NAME, COLUMNA) 
+                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->NAME', '$serieObj->COLUMNA')";
+                        $results = $this->execQuery($query);
+                        if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                    }
+                }
             }
         }
         
@@ -113,44 +130,11 @@ class ContentModel extends Model
 
     public function update($data)
     {   
-        
-        $results['error'] = '';
-        $table = $this->table;
-        $query = "UPDATE $table SET NAME = '$data->NAME' WHERE ID = '$data->ID'";
-        $results = $this->execQuery($query);
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-
-        $subreport = $this->tables->subreports->name;
-        $results = $this->execQuery("DELETE FROM $subreport where REPORT_ID = $data->ID");
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-
-        if ($data->subreports && count($data->subreports))
-        {
-            $subreport = $this->tables->subreports->name;
-            
-            foreach($data->subreports as $key=>$value)
-            {
-                $seq = $this->tables->subreports->seq;
-                $query = "INSERT INTO $subreport VALUES ($seq.nextval, '$value', $data->ID)";
-                $results = $this->execQuery($query);
-                if ($results['error'])  return $this->jsonResponse($results, 500);
-            }
-        }
-        
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-
          return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 200);
     }
 
     public function delete($report_id)
     {
-        
-        $results = $this->execQuery("DELETE FROM $this->table where ID = $report_id");
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-
-        $subreport = $this->tables->subreports->name;
-        $results = $this->execQuery("DELETE FROM $subreport where REPORT_ID = $report_id");
-        if ($results['error'])  return $this->jsonResponse($results, 500);
 
          return $this->jsonResponse([ "code"=> '001', "message" => 'Elimmando correctamente' ], 200);
 
