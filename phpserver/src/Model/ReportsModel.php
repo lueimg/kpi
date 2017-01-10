@@ -76,11 +76,6 @@ class ReportsModel extends Model
         ];
     }
 
-    public function fetchAllWithSubreports ()
-    {
-        //
-    }
-
      public function fetchById($report_id='')
     {
         $query = "SELECT * from kpi_reports where ID = $report_id";

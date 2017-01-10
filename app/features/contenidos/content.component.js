@@ -2,7 +2,7 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
     var id = $routeParams.id,
       successHandler = function () {
         vm.isDisabled = false;
-        $vm.backToList();
+        vm.backToList();
         notification.great('Guardado correctamente');
       },
       errorHandler = function (err) {
@@ -16,17 +16,11 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
       vm = this;
       
     vm.backToList = () => $location.path('/contenidos');
-
-    ReportesSvc.query((response) => {
-      vm.reports = response.results.list;
-    });
+    ReportesSvc.query(response =>  vm.reports = response.results.list);
     vm.reportChange = () => {
-      vm.content.SUBREPORT_ID = null;
-      if (vm.content.REPORT_ID) 
-        vm.subreports = vm.reports.find( report => report.ID == vm.content.REPORT_ID).SUBREPORTS_ROWS;
-      else {
-         vm.subreports = [];
-      }
+      vm.content.SUBREPORT_ID = undefined;
+      vm.subreports = [];
+      if (vm.content.REPORT_ID) vm.subreports = vm.reports.find( report => report.ID == vm.content.REPORT_ID).SUBREPORTS_ROWS;
     };
 
     vm.content = new ContentSvc();
@@ -50,7 +44,7 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
             if (!id) {
               vm.content.$save(successHandler, errorHandler);
             } else {
-            ContentSvc.update(vm.content, successHandler, errorHandler);
+              ContentSvc.update(vm.content, successHandler, errorHandler);
             }
           } else {
             vm.isDisabled = false;
@@ -59,6 +53,13 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
         }
         vm.isDisabled = false;
       };
+    
+    if (id) {
+      ContentSvc.get({ID: id}, (response) => {
+         vm.content = response.results;
+      });
+    }
+
 }
 
 angular.module('doc.features').component('contentComponent', {

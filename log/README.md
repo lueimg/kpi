@@ -1,1 +1,0 @@
-Default file to create log folder

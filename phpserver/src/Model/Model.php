@@ -36,8 +36,6 @@ abstract class Model
         
     }
 
-    
-
     public function getList($query = '') {
         try {
             // $query =  ($this->query) ? $this->query : $query;
