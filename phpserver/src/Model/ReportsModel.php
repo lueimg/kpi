@@ -31,12 +31,18 @@ class ReportsModel extends Model
         $qFrom =" FROM $table RE ";
         $qJoin1 = " LEFT JOIN ( SELECT REPORT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) SUBREPORTS_DATA, COUNT(1) TOTAL FROM  $subtable GROUP BY REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
         
+
+        $qWhere = "  WHERE 1 = 1 ";
+
+        if ($data->name) {
+            $qWhere .= " AND RE.NAME LIKE '%$data->name%'";
+        }
         
         $orderColumn = strtoupper($data->sort);
         $orderDirection = strtoupper($data->sort_dir);
         $qOrder =  " ORDER BY RE.$orderColumn $orderDirection ";
 
-        $qFullQuery = "$qList $qFrom $qJoin1 $qOrder";
+        $qFullQuery = "$qList $qFrom $qJoin1  $qWhere $qOrder";
 
         $lowerLimit  = $data->limit * ($data->page -1) + 1;
         $upperLimit = $data->limit * $data->page;
@@ -47,7 +53,7 @@ class ReportsModel extends Model
         // $this->debugger("$qPaginationPart1 $qFullQuery $qPaginationPart2");
 
         $list = $this->getList("$qPaginationPart1 $qFullQuery $qPaginationPart2");
-        $count = $this->getList("$qCount $qFrom $qJoin1 $qOrder");
+        $count = $this->getList("$qCount $qFrom $qJoin1  $qWhere $qOrder");
 
         foreach($list as $report)
         {
