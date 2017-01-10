@@ -28,7 +28,7 @@ abstract class Model
         $this->tables = (object) [ 
             "reports" =>   (object) array('name'=> "KPI_REPORTS", 'seq' => 'kpi_reports_seq'),
             "subreports" =>   (object) array('name'=> "KPI_SUBREPORTS", 'seq' => 'kpi_subreports_seq'),
-            "content" =>   (object) array('name'=> "KPI_CONTENT", 'seq' => 'kpi_content_seq'),
+            "content" =>   (object) array('name'=> "KPI_CONTENTS", 'seq' => 'kpi_content_seq'),
             "queries" =>   (object) array('name'=> "KPI_QUERIES", 'seq' => 'kpi_queries_seq'),
             "graphics" =>   (object) array('name'=> "KPI_GRAPHICS", 'seq' => 'kpi_graphics_seq'),
             "series" =>   (object) array('name'=> "KPI_SERIES", 'seq' => 'kpi_series_seq'),

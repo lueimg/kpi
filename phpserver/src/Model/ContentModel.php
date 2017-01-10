@@ -24,16 +24,51 @@ class ContentModel extends Model
 
     public function fetchAll($data = [])
     {   
-        $table = $this->table;
+        $table = $this->tables->reports->name;
         $subtable = $this->tables->subreports->name;
-        $qList = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS "  ;
+        $qFields = "SELECT CON.ID, CON.NAME, CON.REPORT_ID, CON.SUBREPORT_ID , REP.NAME REPORT_NAME, SUB.NAME SUBREPORT_NAME, QUE.QUERIES_TOTAL, QUE.QUERIES_DATA, GRA.GRAPHICS_TOTAL "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
-        $qFrom =" FROM $table RE
-                left join ( select SRE.REPORT_ID, count(1) TOTAL FROM $subtable SRE group by SRE.REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID 
-                ORDER BY RE.ID ASC";
+        $qFrom =" FROM KPI_CONTENTS CON
+                    LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
+                    LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
+                    LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), QUERY), '|') WITHIN GROUP (ORDER BY ID) QUERIES_DATA, COUNT(1) QUERIES_TOTAL FROM  KPI_QUERIES GROUP BY CONTENT_ID) QUE ON QUE.CONTENT_ID = CON.ID
+                    LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL FROM  KPI_GRAPHICS GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
+        $qWhere = "  WHERE 1 = 1 ";
+        $orderColumn = 'ID';
+        $orderDirection = "ASC";
 
-        $list = $this->getList("$qList $qFrom");
-        $count = $this->getList("$qCount $qFrom");
+        if (!empty($data->name) && $data->name)  $qWhere .= " AND lower(CON.NAME) LIKE '%' || lower('$data->name') || '%' ";
+        if (!empty($data->sort) && $data->sort) $orderColumn = strtoupper($data->sort);
+        if (!empty($data->sort_dir) && $data->sort_dir) $orderDirection = strtoupper($data->sort_dir);
+        if (!empty($data->limit) && $data->limit) {
+            $lowerLimit  = $data->limit * ($data->page -1) + 1;
+            $upperLimit = $data->limit * $data->page;
+            
+            $qPaginationPart1 = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ( ";
+            $qPaginationPart2 = " ) A WHERE ROWNUM <= $upperLimit) WHERE RNUM >= $lowerLimit ";
+        }
+        $qOrder =  " ORDER BY CON.$orderColumn $orderDirection ";
+        $qFullSelect = "$qFields $qFrom $qWhere $qOrder";
+
+        $query = $qFullSelect;
+        if (!empty($data->limit) && $data->limit) $query = "$qPaginationPart1 $qFullSelect $qPaginationPart2";
+
+        // $this->debugger($query);
+        $list = $this->getList($query);
+        $count = $this->getList("$qCount $qFrom  $qWhere $qOrder");
+
+        // foreach($list as $report)
+        // {
+        //     $rows = explode("|", $report->SUBREPORTS_RAW);
+        //     $report->SUBREPORTS_ROWS  = array();
+        //     foreach($rows as $subreport_data)
+        //     {   
+        //        if ($subreport_data) {
+        //         list($id, $value) = explode("*", $subreport_data);
+        //         if ($id) $report->SUBREPORTS_ROWS[] = array("ID"=>$id, "NAME"=>$value);
+        //        }
+        //     }
+        // }
         
         return [
             "status" => 200,
@@ -133,8 +168,11 @@ class ContentModel extends Model
          return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 200);
     }
 
-    public function delete($report_id)
+    public function delete($content_id)
     {
+
+        $results = $this->execQuery("DELETE FROM $this->table where ID = $content_id");
+        if ($results['error'])  return $this->jsonResponse($results, 500);
 
          return $this->jsonResponse([ "code"=> '001', "message" => 'Elimmando correctamente' ], 200);
 

@@ -1,4 +1,4 @@
-var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routeParams, ReportesSvc) {
+var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routeParams, ReportesSvc, $location) {
     var id = $routeParams.id,
       successHandler = function () {
         vm.isDisabled = false;
@@ -15,9 +15,7 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
       },
       vm = this;
       
-    vm.backToList = function () {
-      $location.path('/contenid');
-    };
+    vm.backToList = () => $location.path('/contenidos');
 
     ReportesSvc.query((response) => {
       vm.reports = response.results.list;
@@ -65,6 +63,6 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
 
 angular.module('doc.features').component('contentComponent', {
   template: require('./content.component.html'),
-  controller: ['notification', 'ServicesConfig','ContentSvc', '$routeParams', 'ReportesSvc', ContentCtrl],
+  controller: ['notification', 'ServicesConfig','ContentSvc', '$routeParams', 'ReportesSvc', '$location', ContentCtrl],
   bindings: {}
 });

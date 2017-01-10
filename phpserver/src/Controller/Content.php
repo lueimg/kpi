@@ -19,18 +19,13 @@ class Content extends Controller
 
     protected function getAction($request, $response)
     {
-        // $report_id = $this->getUrlSegment(1);
-        // $results = array();
+        $content_id = $this->getUrlSegment(1);
 
-        // // listado
-        // if (!$report_id) 
-        //     $results = $this->model->fetchAll();
-        // else {
-        //     // Seleccion por id
-        //     $results = $this->model->fetchById($report_id);
-        // }
+        $results =  ($content_id) ? 
+            $this->model->fetchById($content_id) : 
+            $this->model->fetchAll((object)$request->getParams());
 
-        return $response->withJson(["saludo"=>'hola'], 200);
+        return $response->withJson($results, $results['status']);
     }
 
     

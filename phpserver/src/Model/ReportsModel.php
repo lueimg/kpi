@@ -26,33 +26,32 @@ class ReportsModel extends Model
        
         $table = $this->tables->reports->name;
         $subtable = $this->tables->subreports->name;
-        $qList = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS_TOTAL, TOTALS.SUBREPORTS_DATA SUBREPORTS_RAW "  ;
+        $qFields = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS_TOTAL, TOTALS.SUBREPORTS_DATA SUBREPORTS_RAW "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
         $qFrom =" FROM $table RE ";
         $qJoin1 = " LEFT JOIN ( SELECT REPORT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) SUBREPORTS_DATA, COUNT(1) TOTAL FROM  $subtable GROUP BY REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
-        
-
         $qWhere = "  WHERE 1 = 1 ";
+        $orderColumn = 'ID';
+        $orderDirection = "ASC";
 
-        if ($data->name) {
-            $qWhere .= " AND RE.NAME LIKE '%$data->name%'";
+        if (!empty($data->name) && $data->name)  $qWhere .= " AND lower(RE.NAME) LIKE '%' || lower('$data->name') || '%'";
+        if (!empty($data->sort) && $data->sort) $orderColumn = strtoupper($data->sort);
+        if (!empty($data->sort_dir) && $data->sort_dir) $orderDirection = strtoupper($data->sort_dir);
+        if (!empty($data->limit) && $data->limit) {
+            $lowerLimit  = $data->limit * ($data->page -1) + 1;
+            $upperLimit = $data->limit * $data->page;
+            
+            $qPaginationPart1 = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ( ";
+            $qPaginationPart2 = " ) A WHERE ROWNUM <= $upperLimit) WHERE RNUM >= $lowerLimit ";
         }
-        
-        $orderColumn = strtoupper($data->sort);
-        $orderDirection = strtoupper($data->sort_dir);
         $qOrder =  " ORDER BY RE.$orderColumn $orderDirection ";
+        $qFullSelect = "$qFields $qFrom $qJoin1 $qWhere $qOrder";
 
-        $qFullQuery = "$qList $qFrom $qJoin1  $qWhere $qOrder";
+        $query = $qFullSelect;
+        if (!empty($data->limit) && $data->limit) $query = "$qPaginationPart1 $qFullSelect $qPaginationPart2";
 
-        $lowerLimit  = $data->limit * ($data->page -1) + 1;
-        $upperLimit = $data->limit * $data->page;
-        
-        $qPaginationPart1 = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ( ";
-        $qPaginationPart2 = " ) A WHERE ROWNUM <= $upperLimit) WHERE RNUM >= $lowerLimit ";
 
-        // $this->debugger("$qPaginationPart1 $qFullQuery $qPaginationPart2");
-
-        $list = $this->getList("$qPaginationPart1 $qFullQuery $qPaginationPart2");
+        $list = $this->getList($query);
         $count = $this->getList("$qCount $qFrom $qJoin1  $qWhere $qOrder");
 
         foreach($list as $report)
