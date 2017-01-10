@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class Reports extends Model
+class ReportsModel extends Model
 {
     
     protected $newId =  '';
@@ -22,17 +22,31 @@ class Reports extends Model
     }
 
     public function fetchAll($data = [])
-    {   
+    {  
+       
         $table = $this->tables->reports->name;
         $subtable = $this->tables->subreports->name;
         $qList = "SELECT RE.ID, RE.NAME, TOTALS.TOTAL SUBREPORTS_TOTAL, TOTALS.SUBREPORTS_DATA SUBREPORTS_RAW "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
         $qFrom =" FROM $table RE ";
-        // $qJoin1 = " left join ( select SRE.REPORT_ID, count(1) TOTAL FROM $subtable SRE group by SRE.REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
         $qJoin1 = " LEFT JOIN ( SELECT REPORT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) SUBREPORTS_DATA, COUNT(1) TOTAL FROM  $subtable GROUP BY REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
-        $qOrder =  "ORDER BY RE.ID ASC";
+        
+        
+        $orderColumn = strtoupper($data->sort);
+        $orderDirection = strtoupper($data->sort_dir);
+        $qOrder =  " ORDER BY RE.$orderColumn $orderDirection ";
 
-        $list = $this->getList("$qList $qFrom $qJoin1 $qOrder");
+        $qFullQuery = "$qList $qFrom $qJoin1 $qOrder";
+
+        $lowerLimit  = $data->limit * ($data->page -1) + 1;
+        $upperLimit = $data->limit * $data->page;
+        
+        $qPaginationPart1 = "SELECT * FROM (SELECT A.*, ROWNUM RNUM FROM ( ";
+        $qPaginationPart2 = " ) A WHERE ROWNUM <= $upperLimit) WHERE RNUM >= $lowerLimit ";
+
+        // $this->debugger("$qPaginationPart1 $qFullQuery $qPaginationPart2");
+
+        $list = $this->getList("$qPaginationPart1 $qFullQuery $qPaginationPart2");
         $count = $this->getList("$qCount $qFrom $qJoin1 $qOrder");
 
         foreach($list as $report)
@@ -85,7 +99,7 @@ class Reports extends Model
     {   
         $results['error'] = '';
         $table = $this->tables->reports->name;
-        $query = "INSERT INTO $table VALUES ($this->newId, '$data->NAME')";
+        $query = "INSERT INTO $table (ID, NAME) VALUES ($this->newId, '$data->NAME')";
         $results = $this->execQuery($query);
 
         if ($results['error']) return $this->jsonResponse($results, 500);
@@ -97,7 +111,7 @@ class Reports extends Model
             {
                 $table = $this->tables->subreports->name;
                 $seq = $this->tables->subreports->seq;
-                $query = "INSERT INTO $table VALUES ($seq.nextval, '$value', $lastId)";
+                $query = "INSERT INTO $table (ID, NAME, REPORT_ID) VALUES ($seq.nextval, '$value', $lastId)";
                 $results = $this->execQuery($query);
                 if ($results['error'])  return $this->results($response, 500);
             }

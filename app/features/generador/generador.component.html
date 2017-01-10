@@ -1,0 +1,74 @@
+<section class="content-header">
+      <h1>
+        Generador de Reportes
+       
+      </h1>
+     
+</section>
+
+<section class="content">
+      <div class="row">
+        <div class="col-md-3">
+
+          <div class="box box-solid">
+            
+            <div class="box-body no-padding">
+            <form action="">
+                <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-4">
+                        <label for="">Año</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select name="" id="">
+                            <option value="2016">2016</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="col-sm-4">
+                        <label for="">Semana</label>
+                    </div>
+                    <div class="col-sm-8">
+                        <select name="" id="">
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            </form>
+            
+            <div class="box-header with-border">
+              <h3 class="box-title">Lista de Reportes</h3>
+            </div>
+              <ul class="nav nav-pills nav-stacked">
+                <li><a href="#"><i class="fa fa-trash-o"></i> Test</a></li>
+              </ul>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /. box -->
+         
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+          <div class="box box-primary">
+            <div class="box-header with-border">
+              <h3 class="box-title">Contenido</h3>
+              <!-- /.box-tools -->
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+              
+               <hc-chart options="$ctrl.chartOptions">Placeholder for generic chart</hc-chart>
+                <hc-pie-chart title="Browser usage" data="$ctrl.pieData">Placeholder for pie chart</hc-pie-chart>
+              <!-- /.mail-box-messages -->
+            </div>
+            <!-- /.box-body -->
+           
+          </div>
+          <!-- /. box -->
+        </div>
+        <!-- /.col -->
+      </div>
+</section>

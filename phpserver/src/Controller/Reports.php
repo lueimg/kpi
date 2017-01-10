@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Model\Reports as ReportsModel;
+use App\Model\ReportsModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -24,7 +24,7 @@ class Reports extends Controller
 
         // listado
         if (!$report_id) 
-            $results = $this->model->fetchAll();
+            $results = $this->model->fetchAll((object)$request->getParams());
         else {
             // Seleccion por id
             $results = $this->model->fetchById($report_id);

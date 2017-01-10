@@ -33,16 +33,10 @@ class Content extends Controller
         return $response->withJson(["saludo"=>'hola'], 200);
     }
 
-    /**
-     * Get book specified by id in URL segment.
-     *
-     * @param \Slim\Http\Request
-     * @param \Slim\Http\Response
-     * @return object
-     */
+    
     protected function postAction($request , $response)
     {
-        $results =  $this->model->save((object)$request->getParams());
+        $results = $this->model->save((object)$request->getParams());
         return $response->withJson($results, $results['status']);
     }
 

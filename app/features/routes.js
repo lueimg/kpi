@@ -7,7 +7,8 @@
         .when('/reportes', { template: "<reportes-component></reportes-component>" })
         .when('/reportes/create', { template: "<reportes-form-component></reportes-form-component>" })
         .when('/reportes/:id', { template: "<reportes-form-component></reportes-form-component>" })
-        .when('/contenidos/crear', { template: "<content-component></content-component>" });
+        .when('/contenidos/crear', { template: "<content-component></content-component>" })
+        .when('/generador', { template: "<generador-component></generador-component>" })
 
     }]);
 })();
