@@ -1,62 +1,38 @@
-var GeneradorCtrl = function (notification, ContentSvc) {
+var GeneradorCtrl = function (ReportesSvc) {
     var vm = this;
-    vm.filters = {
-        year : "2016",
-        week : "40",
-        content_id: 0
-    };
-    vm.content = {};
-    // Sample options for first chart
-    vm.chartOptions = {
-        title: {
-            text: 'Temperature data'
-        },
-        xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        },
-
-        series: [
-            { data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]}
-        ]
+    vm.filtros = {
+        year : moment().format('YYYY') * 1
     };
 
-    // Sample data for pie chart
-    vm.pieData = [{
-            name: "Microsoft Internet Explorer",
-            y: 56.33
-        }, {
-            name: "Chrome",
-            y: 24.03,
-            sliced: true,
-            selected: true
-        }, {
-            name: "Firefox",
-            y: 10.38
-        }, {
-            name: "Safari",
-            y: 4.77
-        }, {
-            name: "Opera",
-            y: 0.91
-        }, {
-            name: "Proprietary or Undetectable",
-            y: 0.2
-    }];
+    vm.yearList = [];
+    vm.getYearList = () => {
+        let lastYear = moment().format('YYYY') * 1 ;
+        for(let i = lastYear; i  > 1980 ; i--) {
+            vm.yearList.push(i);
+        }
+    };
 
-    vm.showContent = (content_id = 0)  => {
-        vm.filters.content_id = content_id ? content_id :  vm.filters.content_id;
-        ContentSvc.get({ID: 66}, (response) => {
-            vm.content = response.results;
-            console.log(vm.content);
-        });
-    }
+    vm.weekList = [];
+    vm.getWeeksList = () => {
+        for(let i = 1; i  < 53  ; i++) {
+            vm.weekList.push({id: i, text: `Semana ${i}`});
+        }
+    };
+
+     vm.getYearList();
+     vm.getWeeksList();
 
 
-     vm.showContent();
+     ReportesSvc.query((response)=> vm.reports = response.results.list);
+
+     vm.selectContent = (content_id) => {
+
+     };
+
 }
 
 angular.module('doc.features').component('generadorComponent', {
   template: require('./generador.component.html'),
-  controller: ['notification', 'ContentSvc', GeneradorCtrl],
+  controller: ["ReportesSvc", GeneradorCtrl],
   bindings: {}
 });

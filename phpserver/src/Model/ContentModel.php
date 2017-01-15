@@ -149,7 +149,6 @@ class ContentModel extends Model
                 $graph = (object)$graphic;
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
-                $seqQuery =  $this->tables->queries->seq;
                 
                 $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, UNID, TITLE) 
                 VALUES ($seqGraphics.nextval, $contentTableLastId, '$graph->graphic_type', '$graph->und', '$graph->title')";

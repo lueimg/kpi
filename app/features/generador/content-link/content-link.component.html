@@ -1,0 +1,9 @@
+<div ng-if="$ctrl.contents.length > 0" class="box-body no-padding">
+    <ul class="nav nav-pills nav-stacked">
+        <li ng-repeat="content in $ctrl.contents">
+            <a>
+                &nbsp; &nbsp; &nbsp; &nbsp;<i class="fa fa-fw fa-area-chart"></i> {{content.NAME}}
+            </a>
+        </li>
+    </ul>
+</div>

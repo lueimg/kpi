@@ -1,0 +1,17 @@
+<div ng-repeat="report in $ctrl.data">
+    <div class="box-header with-border">
+        <h3 class="box-title"> <i class="fa fa-fw fa-minus-square-o"></i> {{report.name}}</h3>
+    </div>
+    <contents-link-component contents="report.contents"></contents-link-component>
+    <div ng-if="report.subreports.length > 0" >
+        <div class="box-body no-padding">
+            <ul class="nav nav-pills nav-stacked">
+                <li ng-repeat="subreport in report.subreports">
+                    <a >  <i class="fa fa-fw  fa-minus-square-o"></i> {{subreport.NAME}} </a>
+                    <contents-link-component contents="subreport.contents"></contents-link-component>    
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+</div>
