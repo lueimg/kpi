@@ -9,14 +9,14 @@ import "./vendor/angular-strap/dist/angular-strap.min.js";
 import "./vendor/angular-strap/dist/angular-strap.tpl.min.js";
 import "./vendor/adapt-strap/dist/adapt-strap.min.js";
 import "./vendor/adapt-strap/dist/adapt-strap.tpl.min.js";
-// import "./vendor/angular-ui-select/dist/select.min.js";
+import "./vendor/angular-ui-select/dist/select.js";
 // import "./vendor/ng-file-upload/ng-file-upload.min.js";
 // import "./vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js";
 import "./vendor/adapt-strap/dist/adapt-strap.min.css";
 // import "./vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css";
 // import "./vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css";
 import "./vendor/angular-bootstrap/ui-bootstrap-csp.css";
-// import "./vendor/angular-ui-select/dist/select.css";
+import "./vendor/angular-ui-select/dist/select.css";
 
 import "./theme/bootstrap/js/bootstrap.min.js";
 import "./theme/plugins/codebar/barcode-jquery.js";

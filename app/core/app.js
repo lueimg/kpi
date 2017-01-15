@@ -13,7 +13,7 @@
       'adaptv.adaptStrap',
       'mgcrea.ngStrap',
       'doc.features',
-      // 'ui.select',
+      'ui.select',
       'ui.bootstrap'
     ]);
   angular.module('doc.features', [])

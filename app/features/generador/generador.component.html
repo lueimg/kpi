@@ -20,13 +20,13 @@
                         <label for="">Año</label>
                     </div>
                     <div class="col-sm-8">
-                        <select name="" id="">
+                        <select name="" id="" ng-model="$ctrl.filters.year" ng-change="$ctrl.showContent()">
                             <option value="2016">2016</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-sm-12">
-                    <div class="col-sm-4">
+                    <div class="col-sm-4" ng-model="$ctrl.filters.week" ng-change="$ctrl.showContent()">
                         <label for="">Semana</label>
                     </div>
                     <div class="col-sm-8">
@@ -42,7 +42,7 @@
               <h3 class="box-title">Lista de Reportes</h3>
             </div>
               <ul class="nav nav-pills nav-stacked">
-                <li><a href="#"><i class="fa fa-trash-o"></i> Test</a></li>
+                <li><a ng-click="$ctrl.showContent(66)" > Test</a></li>
               </ul>
             </div>
             <!-- /.box-body -->
@@ -59,6 +59,12 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body no-padding">
+
+              <div ng-repeat="graphic in $ctrl.content.graphs">
+                <div class="col-sm-12">
+                  Grafico # {{$index + 1 }}
+                </div>
+              </div>
               
                <hc-chart options="$ctrl.chartOptions">Placeholder for generic chart</hc-chart>
                 <hc-pie-chart title="Browser usage" data="$ctrl.pieData">Placeholder for pie chart</hc-pie-chart>

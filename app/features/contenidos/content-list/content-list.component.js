@@ -28,10 +28,6 @@ var ContentListCtrl = function (notification, ServicesConfig, ContentSvc) {
             template: '{{item.SUBREPORT_NAME}}',
         },
         {
-            columnHeaderDisplayName: 'QUERIES',
-            template: '{{item.QUERIES_TOTAL}}',
-        },
-        {
             columnHeaderDisplayName: 'GRAFICOS',
             template: '{{item.GRAPHICS_TOTAL}}',
         },

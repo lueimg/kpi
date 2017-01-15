@@ -141,7 +141,7 @@ class ReportsModel extends Model
             foreach($data->subreports as $key=>$value)
             {
                 $seq = $this->tables->subreports->seq;
-                $query = "INSERT INTO $subreport VALUES ($seq.nextval, '$value', $data->ID)";
+                $query = "INSERT INTO $subreport (ID, NAME, REPORT_ID)VALUES ($seq.nextval, '$value', $data->ID)";
                 $results = $this->execQuery($query);
                 if ($results['error'])  return $this->jsonResponse($results, 500);
             }

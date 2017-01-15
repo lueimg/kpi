@@ -24,11 +24,11 @@
                         <label for="descripcion"
                                class="col-sm-2 control-label"
                                required-field>Nombre: </label>
-                        <div class="col-sm-10">
+                        <div class="col-sm-6">
                             <input type="text" class="form-control" id="descripcion" placeholder="Nombre"
                                    required
                                    maxlength="500"
-                                   style="width: 60%"
+                                  
                                    ng-model="$ctrl.content.NAME"
                                    data-auto-focus>
                         </div>
@@ -38,8 +38,8 @@
                         <label for="descripcion"
                                class="col-sm-2 control-label"
                                required-field>Reporte: </label>
-                        <div class="col-sm-3">
-                            <select name="reporte" 
+                        <div class="col-sm-2">
+                            <select name="reporte"  class="form-control"
                                     id="reporte" 
                                     ng-model="$ctrl.content.REPORT_ID" required
                                     ng-change="$ctrl.reportChange()">
@@ -49,8 +49,8 @@
                         </div>
 
                         <label ng-if="$ctrl.subreports.length > 0" for="descripcion" class="col-sm-2 control-label">Sub Reporte: </label>
-                        <div class="col-sm-3"  ng-if="$ctrl.subreports.length > 0">
-                            <select required name="subreport" id="subreport" ng-model="$ctrl.content.SUBREPORT_ID" >
+                        <div class="col-sm-2"  ng-if="$ctrl.subreports.length > 0">
+                            <select class="form-control" required name="subreport" id="subreport" ng-model="$ctrl.content.SUBREPORT_ID" >
                                 <option value="">Seleccione</option>
                                 <option ng-repeat="item in $ctrl.subreports" value="{{item.ID}}">{{item.NAME}}</option>
                             </select>
@@ -60,107 +60,54 @@
                     <div class="form-group">
                         <label for="descripcion"
                                class="col-sm-2 control-label"
-                               required-field>Queries: </label>
-                        <div class="col-sm-6">
-                            <p> Use los los siguientes parametros permitidos: </p>    
-                            <p> <b>@param1</b> año seleccionado</p>
-                            <p> <b>@param2</b> semana seleccionado</p>
-                        </div>
-                        <div class="field-group col-sm-offset-2 col-sm-9">
-
-                            <div class="field-group-item col-sm-12" ng-repeat="item in $ctrl.content.queries track by $index">
-                                <div class="col-sm-1">
-                                   #{{$index + 1}}
-                                </div>
-                                <div class="col-sm-9">
-                                    <textarea type="text" placeholder="select * from ..." class="form-control" required ng-model="$ctrl.content.queries[$index]"></textarea>
-                                </div>
-                                <div class="col-sm-2"> 
-                                    <a  ng-click="$ctrl.removeQuery($index)"> <i class="fa fa-trash"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="field-group-button col-sm-3">
-                                 <a class="btn btn-block btn-success btn-sm"  ng-click="$ctrl.addQuery()">Agregar Query</a>
-                            </div>
+                               required-field>Procedure: </label>
+                        
+                        <div class="col-sm-6"> 
+                            <input type="text" class="form-control" id="procedure" placeholder="Ingrese el store procedure"
+                                   required
+                                   maxlength="500"
+                                  
+                                   ng-model="$ctrl.content.PROCEDURE"
+                                   data-auto-focus>
+                        </div> 
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion"
+                               class="col-sm-2 control-label"
+                               required-field>Rango Sem.: </label>
+                        
+                        <div class="col-sm-6"> 
+                            <input type="text" class="form-control" id="rango-semana" placeholder="Numero de semanas"
+                                   required
+                                   maxlength="500"
+                                  
+                                   ng-model="$ctrl.content.WEEKSRANGE"
+                                   data-auto-focus>
+                        </div> 
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion"
+                               class="col-sm-2 control-label"
+                               required-field>Campos: </label>
+                        
+                        <div class="col-sm-6"> 
+                            <multi-tag placeholder="Campos del select" selection="$ctrl.content.FIELDS"></multi-tag>
+                        </div> 
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="descripcion"
-                            class="col-sm-2 control-label"
-                            required-field>Gráficos: </label>
-                    <div class="col-sm-5">
-                        <p>* Debe tener Queries agregados</p>
+                    <label class="col-sm-2 control-label"for="descripcion" required-field>Gráficos: </label>
+                    <div class="graphic-group col-sm-8">
+                        <graphic-field-component ng-repeat="graphic in $ctrl.content.graphs" 
+                                                 graphic="graphic"
+                                                 on-remove-graphic="$ctrl.removeGraph($index)"  ></graphic-field-component>
                     </div>
-                    <div ng-if="$ctrl.content.queries.length > 0" class="field-group col-sm-offset-2 col-sm-9">
-                        <div class="field-group-item with-border-button col-sm-12" ng-repeat="graph in $ctrl.content.graphs track by $index">
-                            <div class="col-sm-3">
-                                Usar Query # 
-                                <select name="graph" id="" ng-model="graph.query_index">
-                                    <option ng-repeat="query in $ctrl.content.queries track by $index" value="{{$index}}">{{$index + 1}}</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-4">
-                                Tipo grafico:
-                                <select name="graphic_type" id="" ng-model="graph.graphic_type">
-                                    <option value="lineal">lineal</option>
-                                    <option value="Pie">Pie</option>
-                                    <option value="Tabal">Tabal</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-3">
-                                Unidad: 
-                                <input type="text" ng-model="graph.und">
-                            </div>
-                            <div class="col-sm-2"> 
-                                    <a  ng-click="$ctrl.removeGraph($index)"> <i class="fa fa-trash"></i> Borrar Grafico</a>
-                            </div>
-                            <!--inicia Serie -->
-                            <div class="col-sm-12">
-                                <div class="col-sm-12">
-                                    <div class="col-sm-2">
-                                        <p>:::Series:</p>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <a class=""  ng-click="$ctrl.addSerie(graph.series)">Agregar Serie</a>
-                                    </div>
-                                </div>
-                                <div class="group-serie col-sm-12">
 
-                                    <div class="group-serie-item col-sm-12" ng-repeat="serie in graph.series track by $index">
-                                        <div class="col-sm-3">
-                                            Tipo <select name="serie-tipo" id="" ng-model="serie.SUBGRAPHIC_TYPE">
-                                                <option value="linea">Linea</option>
-                                                <option value="barra">Barra</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Etiqueta <input type="text" ng-model="serie.NAME">
-                                        </div>
-                                        <div class="col-sm-4">
-                                            Columna: <input type="text" ng-model="serie.COLUMNA">
-                                        </div>
-                                        <div class="col-sm-1"> 
-                                            <a  ng-click="$ctrl.removeSerie(graph.series, $index)"> <i class="fa fa-trash"></i></a>
-                                        </div>
-                                    </div>
-                                   
-                                </div>
-                                
-                            </div>
-                            <!--Fin Serie -->
-                        </div>
-                        <div class="col-sm-3">
-                                <a class="btn btn-block btn-success btn-sm"  ng-click="$ctrl.addGraph()">Agregar Grafico</a>
-                        </div>
-                        
+                    <div class="col-sm-3 col-sm-offset-2">
+                        <a class="btn btn-block btn-success btn-sm"  ng-click="$ctrl.addGraph()">Agregar Grafico</a>
                     </div>
                 </div>
-
-
-
-
                 <div class="box-footer">
                     <button type="submit" class="btn btn-info pull-right" ng-click="$ctrl.save(form)">Guardar</button>
                     <button type="submit" class="btn btn-default" ng-click="$ctrl.backToList()">Cancelar</button>
@@ -169,4 +116,6 @@
         </div>
     </div>
 </div>
-   
+<pre>
+    {{$ctrl.content | json}}
+</pre>

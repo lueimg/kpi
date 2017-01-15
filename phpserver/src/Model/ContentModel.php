@@ -26,12 +26,11 @@ class ContentModel extends Model
     {   
         $table = $this->tables->reports->name;
         $subtable = $this->tables->subreports->name;
-        $qFields = "SELECT CON.ID, CON.NAME, CON.REPORT_ID, CON.SUBREPORT_ID , REP.NAME REPORT_NAME, SUB.NAME SUBREPORT_NAME, QUE.QUERIES_TOTAL, QUE.QUERIES_DATA, GRA.GRAPHICS_TOTAL "  ;
+        $qFields = "SELECT CON.ID, CON.NAME, CON.REPORT_ID, CON.SUBREPORT_ID , REP.NAME REPORT_NAME, SUB.NAME SUBREPORT_NAME, GRA.GRAPHICS_TOTAL "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
         $qFrom =" FROM KPI_CONTENTS CON
                     LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
                     LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
-                    LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), QUERY), '|') WITHIN GROUP (ORDER BY ID) QUERIES_DATA, COUNT(1) QUERIES_TOTAL FROM  KPI_QUERIES WHERE STATUS = 1 GROUP BY CONTENT_ID) QUE ON QUE.CONTENT_ID = CON.ID
                     LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
         $qWhere = "  WHERE 1 = 1 AND CON.STATUS = 1  ";
         $orderColumn = 'ID';
@@ -53,7 +52,6 @@ class ContentModel extends Model
         $query = $qFullSelect;
         if (!empty($data->limit) && $data->limit) $query = "$qPaginationPart1 $qFullSelect $qPaginationPart2";
 
-        // $this->debugger($query);
         $list = $this->getList($query);
         $count = $this->getList("$qCount $qFrom  $qWhere $qOrder");
 
@@ -71,13 +69,13 @@ class ContentModel extends Model
     {
        $table = $this->tables->reports->name;
         $subtable = $this->tables->subreports->name;
-        $qFields = "SELECT CON.ID, CON.NAME, CON.REPORT_ID, CON.SUBREPORT_ID , REP.NAME REPORT_NAME, SUB.NAME SUBREPORT_NAME, QUE.QUERIES_TOTAL, QUE.QUERIES_DATA, GRA.GRAPHICS_TOTAL, GRA.GRAPHICS_DATA "  ;
+        $qFields = "SELECT CON.ID, CON.NAME, CON.PROCEDURE, CON.WEEKSRANGE, CON.REPORT_ID, CON.SUBREPORT_ID , REP.NAME REPORT_NAME, SUB.NAME SUBREPORT_NAME, FIELDS.FIELDS_TOTAL, FIELDS.FIELDS_DATA, GRA.GRAPHICS_TOTAL, GRA.GRAPHICS_DATA "  ;
         $qCount = "SELECT count(1) as TOTAL  ";
         $qFrom =" FROM KPI_CONTENTS CON
-                    LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
-                    LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
-                    LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), QUERY), '|') WITHIN GROUP (ORDER BY ID) QUERIES_DATA, COUNT(1) QUERIES_TOTAL FROM  KPI_QUERIES WHERE STATUS = 1 GROUP BY CONTENT_ID) QUE ON QUE.CONTENT_ID = CON.ID
-                    LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||QUERY_ID||'*'||GRAPHIC_TYPE_ID||'*'||UNIDAD, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
+        LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
+        LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
+        LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) FIELDS_DATA, COUNT(1) FIELDS_TOTAL FROM  KPI_CONTENTS_FIELDS WHERE STATUS = 1 GROUP BY CONTENT_ID) FIELDS ON FIELDS.CONTENT_ID = CON.ID
+        LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||TITLE||'*'||TYPE||'*'||UNID, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
         
         $qWhere = "  WHERE 1 = 1  AND CON.ID = $content_id";
         $orderColumn = 'ID';
@@ -87,18 +85,16 @@ class ContentModel extends Model
         $result = $this->getList($qFullSelect)[0];
 
         // queries
-        $result->queries = [];
-        if ($result->QUERIES_TOTAL > 0) {
-            $query_indexes = [];
-            $queries = explode("|", $result->QUERIES_DATA);
-            foreach($queries as $query) {
-                $data = explode("*", $query);
-                $result->queries[] = $data[1];
-                $query_indexes[] = $data[0];
+        $result->FIELDS = [];
+        if ($result->FIELDS_TOTAL > 0) {
+           
+            $fields = explode("|", $result->FIELDS_DATA);
+            foreach($fields as $field) {
+                $data = explode("*", $field);
+                $result->FIELDS[] = $data[1];
+                // $query_indexes[] = $data[0];
             }
         }
-
-        
 
         // graphics
         $result->graphs = [];
@@ -106,10 +102,10 @@ class ContentModel extends Model
             $rows = explode("|", $result->GRAPHICS_DATA);
             foreach($rows as $row) {
                 $data = explode("*", $row);
-                $series = $this->getList("SELECT * FROM KPI_SERIES WHERE GRAPHIC_ID = $data[0]");
+                $series = $this->getList("SELECT * FROM KPI_SERIES WHERE GRAPHIC_ID = $data[0] AND STATUS  = 1");
                 
                 $result->graphs[] = array(
-                    "query_index" => ''.array_search($data[1], $query_indexes, TRUE). "", 
+                    "title" => $data[1],
                     "graphic_type"=>$data[2], 
                     "und"=>$data[3], 
                     "series"=> $series);
@@ -128,24 +124,21 @@ class ContentModel extends Model
         $table = $this->table;
         $subReportField = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ' , SUBREPORT_ID ' : '';
         $subReportIdValue =  !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ', ' . $data->SUBREPORT_ID : '';
-        $query = "INSERT INTO $table (ID, NAME, REPORT_ID  $subReportField)  VALUES ($this->newId, '$data->NAME', $data->REPORT_ID $subReportIdValue)";
+        $query = "INSERT INTO $table (ID, NAME, REPORT_ID, PROCEDURE, WEEKSRANGE  $subReportField)  VALUES ($this->newId, '$data->NAME', $data->REPORT_ID, '$data->PROCEDURE', '$data->WEEKSRANGE' $subReportIdValue)";
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
         $contentTableLastId = $this->getLastId();
         
-        if (count($data->queries))
+        if (count($data->FIELDS))
         {   
-            foreach($data->queries as $value)
+            foreach($data->FIELDS as $field)
             {
-                $queriesTable = $this->tables->queries->name;
-                $seq = $this->tables->queries->seq;
-                $query = "INSERT INTO $queriesTable (ID, QUERY, CONTENT_ID) 
-                            VALUES ($seq.nextval, '$value', $contentTableLastId)";
+                $queriesTable = $this->tables->contents_fields->name;
+                $seq = $this->tables->contents_fields->seq;
+                $query = "INSERT INTO $queriesTable (ID, NAME, CONTENT_ID) VALUES ($seq.nextval, '$field', $contentTableLastId)";
                 $results = $this->insert($query, $seq);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
-                
-                $queries_index[] = $results;
             }
         }
 
@@ -157,9 +150,9 @@ class ContentModel extends Model
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
                 $seqQuery =  $this->tables->queries->seq;
-                $query_id = $queries_index[$graph->query_index];
-                $query = "INSERT INTO $graphicsTable (ID, QUERY_ID, CONTENT_ID, GRAPHIC_TYPE_ID, UNIDAD) 
-                            VALUES ($seqGraphics.nextval, $query_id, $contentTableLastId, '$graph->graphic_type', '$graph->und')";
+                
+                $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, UNID, TITLE) 
+                VALUES ($seqGraphics.nextval, $contentTableLastId, '$graph->graphic_type', '$graph->und', '$graph->title')";
 
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
@@ -193,30 +186,30 @@ class ContentModel extends Model
         $subReportField = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ' , SUBREPORT_ID = ' : '';
         $subReportIdValue = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  '' . $data->SUBREPORT_ID : '';
 
-        $query = "UPDATE $table SET NAME = '$data->NAME',  REPORT_ID = $data->REPORT_ID  $subReportField $subReportIdValue WHERE ID = $data->ID";
+        $query = "UPDATE $table SET  NAME = '$data->NAME', REPORT_ID = $data->REPORT_ID ,  WEEKSRANGE = $data->WEEKSRANGE ,  PROCEDURE = '$data->PROCEDURE'  $subReportField $subReportIdValue  WHERE ID = $data->ID";
+
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
-        $results = $this->execQuery("UPDATE KPI_QUERIES SET STATUS = 0 where CONTENT_ID = $data->ID");
+        $results = $this->execQuery("UPDATE KPI_CONTENTS_FIELDS SET STATUS = 0 where CONTENT_ID = $data->ID");
         if ($results['error'])  return $this->jsonResponse($results, 500);
-        if (count($data->queries))
+
+        if (count($data->FIELDS))
         {   
-            foreach($data->queries as $value)
+            foreach($data->FIELDS as $value)
             {
-                $queriesTable = $this->tables->queries->name;
-                $seq = $this->tables->queries->seq;
+                $secondaryTable = $this->tables->contents_fields->name;
+                $seq = $this->tables->contents_fields->seq;
               
-                $query = "INSERT INTO $queriesTable (ID, QUERY, CONTENT_ID) 
-                            VALUES ($seq.nextval, '$value', $data->ID)";
+                $query = "INSERT INTO $secondaryTable (ID, NAME, CONTENT_ID) VALUES ($seq.nextval, '$value', $data->ID)";
                 $results = $this->insert($query, $seq);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
-                
-                $queries_index[] = $results;
             }
         }
 
         $results = $this->execQuery("UPDATE KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
         if ($results['error'])  return $this->jsonResponse($results, 500);
+
         if (count($data->graphs))
         {   
             foreach($data->graphs as $graphic)
@@ -224,10 +217,8 @@ class ContentModel extends Model
                 $graph = (object)$graphic;
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
-                $seqQuery =  $this->tables->queries->seq;
-                $query_id = $queries_index[$graph->query_index];
-                $query = "INSERT INTO $graphicsTable (ID, QUERY_ID, CONTENT_ID, GRAPHIC_TYPE_ID, UNIDAD) 
-                            VALUES ($seqGraphics.nextval, $query_id, $data->ID, '$graph->graphic_type', '$graph->und')";
+                $query = "INSERT INTO $graphicsTable (ID, TITLE, CONTENT_ID, TYPE, UNID) 
+                            VALUES ($seqGraphics.nextval, '$graph->title', $data->ID, '$graph->graphic_type', '$graph->und')";
 
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);

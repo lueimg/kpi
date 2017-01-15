@@ -8,7 +8,8 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
       },
       errorHandler = function (err) {
         vm.isDisabled = false;
-        notification.error(err.data.message);
+        let message = err.message || err.data.message;
+        notification.error(message);
       },
       preValidation = function () {
       

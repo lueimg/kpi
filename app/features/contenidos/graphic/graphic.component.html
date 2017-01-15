@@ -1,0 +1,69 @@
+<div class="form-group">
+    <div class="row">
+        <label for="descripcion" class="col-sm-2 control-label" required-field>Título: </label>
+        <div class="col-sm-7"> 
+            <input type="text" class="form-control" id="titulo" placeholder="titulo del grafico"
+                required
+                maxlength="500"
+                ng-model="$ctrl.graphic.title"
+                data-auto-focus>
+        </div> 
+        <div class="col-sm-2 pull-right"> 
+            <a  ng-click="$ctrl.removeGraph()"> <i class="fa fa-trash"></i> Borrar Grafico</a>
+        </div>
+     </div>
+     <div class="row">
+         <label for="descripcion" class="col-sm-2 control-label" required-field>Grafico: </label>
+         <div class="col-sm-3">
+             <select class="form-control" name="graphic_type" id="" ng-model="$ctrl.graphic.graphic_type">
+                <option value="lineal">Lines</option>
+                <option value="Pie">Pie</option>
+                <option value="table">table</option>
+            </select>
+         </div>
+        
+         <label for="descripcion" class="col-sm-1 control-label" required-field>Unidad: </label>
+         <div class="col-sm-3">
+             <input class="form-control" type="text" ng-model="$ctrl.graphic.und">
+         </div>
+     </div>
+</div>
+<div class="row">
+    <div class="col-sm-1">
+        <h5 class="box-title">Series: </h5>
+    </div>
+    <div class="col-sm-5">
+        <a class="btn btn-info btn-xs" ng-click="$ctrl.addSerie()"> Agregar serie </a>
+    </div>
+</div> 
+
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <th style="width: 10px">#</th>
+            <th>Tipo</th>
+            <th>Etiqueta</th>
+            <th>Columna</th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="serie in $ctrl.graphic.series">
+            <td>#</td>
+            <td>
+                <select  class="form-control" name="serie-tipo" id="" ng-model="serie.SUBGRAPHIC_TYPE">
+                    <option value="Line">Line</option>
+                    <option value="Column">Column</option>
+                </select>
+            </td>
+            <td>
+                <input class="form-control" type="text" ng-model="serie.NAME">
+            </td>
+            <td>
+                <input class="form-control" type="text" ng-model="serie.COLUMNA">
+            </td>
+            <td>
+                <a  ng-click="$ctrl.removeSerie($index)"> <i class="fa fa-trash"></i></a>
+            </td>
+
+        </tr>
+    </tbody>
+</table>

@@ -1,7 +1,7 @@
 select, input , textarea,
 .ui-select-choices li ,
 ad-table-ajax tbody, .form-control-static{
-    text-transform: uppercase;
+    // text-transform: uppercase;
 }
 
 // Required marker color
@@ -145,4 +145,14 @@ $required-marker-color: #b94a48;
 
 .skin-blue .main-header .navbar {
     background-color: #0154a0;
+}
+
+.graphic-group {
+  graphic-field-component {
+     background: #fbfbfb;
+    border: 1px solid #ccc;
+    padding: 15px;
+    display: block;
+  }
+ 
 }

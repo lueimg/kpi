@@ -24,18 +24,10 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
     };
 
     vm.content = new ContentSvc();
-    vm.content.queries = [];
     vm.content.graphs = [];
-
-    vm.addQuery = () => vm.content.queries.push('');
-    vm.removeQuery = (index) => vm.content.queries.splice(index, 1);
 
     vm.addGraph = () => vm.content.graphs.push({series: [{}]});
     vm.removeGraph = (index) => vm.content.graphs.splice(index, 1);
-
-    // Depend of a graphic
-    vm.addSerie = (series) => series.push({});
-    vm.removeSerie = (series, index) => series.splice(index, 1);
 
     vm.save = function (form) {
         vm.isDisabled = true;
