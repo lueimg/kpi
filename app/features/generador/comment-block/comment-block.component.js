@@ -18,6 +18,9 @@ var Controller = function (CommentSvc) {
     };
 
     vm.saveComment = () => {
+        if (!vm.comment.user) return false;
+        if (!vm.comment.comment) return false;
+        
         vm.comment.key = vm.key;
         CommentSvc.save(vm.comment, (response ) => {
             vm.comment = { user: '', comment: '' };

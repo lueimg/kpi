@@ -59,6 +59,8 @@ var Controller = function ($scope) {
     vm.currentPoint = '';
     vm.onPointClick = (key) => vm.currentPoint = key;
 
+    
+
 }
 
 angular.module('doc.features').component('graphicComponent', {
