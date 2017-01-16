@@ -30,6 +30,7 @@ abstract class Model
             "contents_fields" =>   (object) array('name'=> "KPI_CONTENTS_FIELDS", 'seq' => 'kpi_content_fields_seq'),
             "graphics" =>   (object) array('name'=> "KPI_GRAPHICS", 'seq' => 'kpi_graphics_seq'),
             "series" =>   (object) array('name'=> "KPI_SERIES", 'seq' => 'kpi_series_seq'),
+            "comments" =>   (object) array('name'=> "KPI_COMMENTS", 'seq' => 'kpi_comments_seq'),
         ];
         
     }

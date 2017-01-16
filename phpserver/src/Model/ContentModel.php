@@ -105,6 +105,7 @@ class ContentModel extends Model
                 $series = $this->getList("SELECT * FROM KPI_SERIES WHERE GRAPHIC_ID = $data[0] AND STATUS  = 1");
                 
                 $result->graphs[] = array(
+                    "id" => $data[0],
                     "title" => $data[1],
                     "graphic_type"=>$data[2], 
                     "und"=>$data[3], 

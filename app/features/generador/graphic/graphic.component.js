@@ -1,4 +1,4 @@
-var Controller = function () {
+var Controller = function ($scope) {
     var vm = this;
     vm.isLoading = true;
 
@@ -15,9 +15,7 @@ var Controller = function () {
 
     vm.$onInit = () => {
       vm.series = [];
-      vm.graphic.series.forEach((serie) => {
-        vm.series.push(vm.getSerie(serie));
-      });
+      vm.graphic.series.forEach((serie) => { vm.series.push(vm.getSerie(serie)); });
 
       vm.xAxisData = [];
       vm.title = vm.graphic.title;
@@ -36,7 +34,8 @@ var Controller = function () {
               events: {
                   click: function (event) {
                     var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('')}`;
-                    vm.onPointClick({key: key})
+                    vm.onPointClick(key);
+                    $scope.$apply()
                   }
               }
         }
@@ -52,20 +51,22 @@ var Controller = function () {
           title: {
               text: vm.graphic.und
           }
-      },
+        },
+      }
+      vm.isLoading = false;
     }
-     vm.isLoading = false;
-    }
+
+    vm.currentPoint = '';
+    vm.onPointClick = (key) => vm.currentPoint = key;
 
 }
 
 angular.module('doc.features').component('graphicComponent', {
   template: require('./graphic.component.html'),
-  controller: [Controller],
+  controller: ['$scope', Controller],
   bindings: {
       data: "<",
       graphic: "<",
-      xaxis: "<",
-      onPointClick: '&'
+      xaxis: "<"
   }
 });

@@ -163,3 +163,13 @@ $required-marker-color: #b94a48;
     background: #ccc;
   }
 }
+.comment-group {
+    height: 300px;
+    overflow: scroll;
+}
+
+.comment-item {
+  .username, .description {
+    margin-left: 0;
+  }
+}

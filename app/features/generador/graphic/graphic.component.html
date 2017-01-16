@@ -1,6 +1,9 @@
 <div class="col-sm-8">
     <highchart ng-if="!$ctrl.isLoading" id="chart1" config="$ctrl.chartConfig"></highchart>
 </div>
+<div class="col-sm-4">
+    <comment-block-component key="$ctrl.currentPoint"></comment-component>
+</div>
 <div class="col-sm-12">
- 
+    <comment-block-component key="$ctrl.graphic.id"></comment-component> 
 </div>
