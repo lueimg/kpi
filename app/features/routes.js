@@ -11,5 +11,6 @@
         .when('/contenidos/create', { template: "<content-component></content-component>" })
         .when('/contenidos/:id', { template: "<content-component></content-component>" })
         .when('/generador', { template: "<generador-component></generador-component>" })
+        .when('/comentarios', { template: "<comments-component></comments-component>" })
     }]);
 })();

@@ -32,7 +32,7 @@ class ReportsModel extends Model
         $qJoin1 = " LEFT JOIN ( SELECT REPORT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) SUBREPORTS_DATA, COUNT(1) TOTAL FROM  $subtable GROUP BY REPORT_ID) TOTALS on TOTALS.REPORT_ID = RE.ID ";
         $qWhere = "  WHERE 1 = 1 ";
         $orderColumn = 'ID';
-        $orderDirection = "ASC";
+        $orderDirection = "DESC";
 
         if (!empty($data->name) && $data->name)  $qWhere .= " AND lower(RE.NAME) LIKE '%' || lower('$data->name') || '%'";
         if (!empty($data->sort) && $data->sort) $orderColumn = strtoupper($data->sort);

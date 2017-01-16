@@ -20,19 +20,25 @@ class Comments extends Controller
     protected function getAction($request, $response)
     {   
         $results = [];
-         $key = $this->getUrlSegment(1);
-         
-         switch ($subPage) {
-            default:
-                $results =  $this->model->fetchByKey($key);
-         }
-
+        $key = $this->getUrlSegment(1);
+        if (!empty($key)) {
+            $results =  $this->model->fetchByKey($key);
+        } else {
+             $results = $this->model->fetchAll((object)$request->getParams());
+        }
         return $response->withJson($results, $results['status']);
     }
 
     protected function postAction($request , $response)
     {
         $results = $this->model->save((object)$request->getParams());
+        return $response->withJson($results, $results['status']);
+    }
+
+    protected function deleteAction($request, $response)
+    {
+        $ID = $this->getUrlSegment(1);
+        $results = $this->model->delete((object)$request->getParams());
         return $response->withJson($results, $results['status']);
     }
 

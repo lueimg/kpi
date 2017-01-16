@@ -1,0 +1,74 @@
+<div class="content-header">
+    <h1>Gestión de Comentarios</h1>
+</div>
+<div class="content">
+    <div class="row">
+      <!--  <div class="col-sm-4">
+            <div class="text-left">
+                <a href="#/reportes/create" type="button" class="btn btn-primary">
+                    <i class="fa fa-plus-circle"></i>
+                    Crear Reporte
+                </a>
+            </div>
+        </div> -->
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Buscar"
+                               data-enter-press="$ctrl.search()"
+                               ng-model="$ctrl.searchKey">
+                        <span class="input-group-addon"
+                              ng-click="$ctrl.search()">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <ad-table-ajax table-name="Comentarios"
+                           column-definition="$ctrl.colDef"
+                           table-classes="table table-bordered table-hover bg-blank"
+                           page-sizes="[10, 25, 100]"
+                           page-size="10"
+                           pagination-btn-group-classes="pagination pagination-sm"
+                           ajax-config="$ctrl.tableConfig"
+                           page-loader="methods.pageLoader"
+                           state="$ctrl.tableConfig.state"
+                           items-not-found-message="No se encontraron datos">
+            </ad-table-ajax>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade"
+     id="deleteModal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Confirmar eliminación</h4>
+            </div>
+            <div class="modal-body">
+                Seguro que desea eliminar el comentario: {{ $ctrl.toDelete.usuario }} <br> {{ $ctrl.toDelete.COMENTARIO }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                <button type="button"
+                        class="btn btn-danger"
+                        ng-click="$ctrl.delete($ctrl.toDelete.ID)"
+                        data-dismiss="modal">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
