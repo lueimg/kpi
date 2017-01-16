@@ -4,7 +4,7 @@ var Controller = function () {
 
     vm.getSerie = (serie) => {
       var data = _.filter(vm.data, [serie.COLUMNA, serie.NAME]);
-     
+      
       return {
         "name": serie.NAME,
         "id": serie.ID,
@@ -35,8 +35,8 @@ var Controller = function () {
           cursor: 'pointer',
               events: {
                   click: function (event) {
-                      console.log(this);
-                      
+                    var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('')}`;
+                    vm.onPointClick({key: key})
                   }
               }
         }
@@ -65,6 +65,7 @@ angular.module('doc.features').component('graphicComponent', {
   bindings: {
       data: "<",
       graphic: "<",
-      xaxis: "<"
+      xaxis: "<",
+      onPointClick: '&'
   }
 });

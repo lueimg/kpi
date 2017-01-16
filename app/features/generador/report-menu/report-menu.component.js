@@ -4,6 +4,9 @@ var Controller = function (GeneradorSvc) {
     GeneradorSvc.getReportsMenu((response) =>{
         vm.data = response.results.list;
     });
+    vm.onSelectContent = (content) => {
+        vm.onClick({content: content})
+    };
 }
 
 angular.module('doc.features').component('reportMenuComponent', {

@@ -1,5 +1,8 @@
 var Controller = function () {
     var vm = this;
+    vm.selectContent = (content) => {
+        vm.onClick({content: content});
+    };
 }
 
 angular.module('doc.features').component('contentsLinkComponent', {
@@ -7,7 +10,7 @@ angular.module('doc.features').component('contentsLinkComponent', {
   controller: [ Controller],
   bindings: {
       contents: "<",
-      onClic: "&"
+      onClick: "&"
       
   }
 });

@@ -2,7 +2,6 @@
 <section class="content-header">
   <h1>  Generador de Reportes  </h1>
 </section>
-
 <section class="content">
   <div class="row">
 
@@ -12,7 +11,7 @@
           <h3 class="box-title">Lista de Reportes</h3>
         </div>
         <div class="box box-solid">
-          <report-menu-component on-click="$ctrl.selectContent(content_id)"> </report-menu-component>
+          <report-menu-component on-click="$ctrl.selectContent(content)"> </report-menu-component>
         </div>
       </div>
     </div>
@@ -24,13 +23,13 @@
           <div class="col-sm-10 box-tools pull-right">
             <label for="descripcion" class="col-sm-1 control-label">Año: </label>
             <div class="col-sm-4">
-                <select class="form-control"
+                <select class="form-control" ng-change="$ctrl.generateContent()"
                         ng-model="$ctrl.filtros.year" ng-options="item for item in $ctrl.yearList">
                 </select>
             </div>
             <label for="descripcion" class="col-sm-1 control-label">Semana: </label>
             <div class="col-sm-4">
-                <select class="form-control"
+                <select class="form-control" ng-change="$ctrl.generateContent()"
                         ng-model="$ctrl.filtros.week" ng-options="item.id as item.text for item in $ctrl.weekList">
                 </select>
             </div>
@@ -49,7 +48,8 @@
           <div ng-repeat="graphic in $ctrl.graphics">
               <graphic-component graphic="graphic" 
                                  xaxis="$ctrl.xAxis" 
-                                 data="$ctrl.dataSeries" >
+                                 data="$ctrl.dataSeries"
+                                 on-point-click="$ctrl.clickOnPoint(key)" >
               </graphic-component>
           </div>
 
