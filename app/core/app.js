@@ -14,7 +14,8 @@
       'mgcrea.ngStrap',
       'doc.features',
       'ui.select',
-      'ui.bootstrap'
+      'ui.bootstrap',
+      "highcharts-ng"
     ]);
   angular.module('doc.features', [])
   .constant("ServicesConfig", {

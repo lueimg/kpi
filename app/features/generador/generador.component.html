@@ -15,14 +15,7 @@
           <report-menu-component on-click="$ctrl.selectContent(content_id)"> </report-menu-component>
         </div>
       </div>
-      
-      
     </div>
-
-
-    
-    
-    
     <div class="col-md-9">
       <div class="box box-primary">
         <div class="box-header with-border">
@@ -47,24 +40,18 @@
         <!-- /.box-header -->
         <div class="box-body no-padding">
           
-          <div class="col-sm-12">
-              * Por favor, seleccione un Año, Semana y Contenido
-          </div>
+          
           <hr>
 
           <div class="col-sm-12">
-            <label for="descripcion" class="col-sm-3 control-label">Contenido seleccionado:  </label>
+           
           </div>
-
-          <graphic-component></graphic-component>
-
-
-
-
-
-
-
-
+          <div ng-repeat="graphic in $ctrl.graphics">
+              <graphic-component graphic="graphic" 
+                                 xaxis="$ctrl.xAxis" 
+                                 data="$ctrl.dataSeries" >
+              </graphic-component>
+          </div>
 
         </div>
         <!-- /.box-body -->

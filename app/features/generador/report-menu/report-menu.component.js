@@ -1,7 +1,7 @@
 var Controller = function (GeneradorSvc) {
     var vm = this;
 
-    GeneradorSvc.query((response) =>{
+    GeneradorSvc.getReportsMenu((response) =>{
         vm.data = response.results.list;
     });
 }

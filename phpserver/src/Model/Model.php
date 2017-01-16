@@ -11,8 +11,6 @@ abstract class Model
     protected $newId =  '';
     protected $currentId = '';
 
-
-    // protected $rows;
     /**
      * Constructor.
      *

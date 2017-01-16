@@ -32,3 +32,5 @@ import "./theme/dist/css/AdminLTE.min.css";
 import "./theme/dist/css/skins/_all-skins.min.css";
 import "./core/main.css";
 import "./main.less";
+import "highcharts-ng";
+import "lodash";
