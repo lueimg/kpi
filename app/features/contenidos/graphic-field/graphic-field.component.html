@@ -15,7 +15,7 @@
      <div class="row">
          <label for="descripcion" class="col-sm-2 control-label" required-field>Grafico: </label>
          <div class="col-sm-3">
-             <select class="form-control" name="graphic_type" id="" ng-model="$ctrl.graphic.graphic_type">
+             <select class="form-control" name="graphic_type" id="" ng-model="$ctrl.graphic.graphic_type" ng-change="$ctrl.updateSubGraphicType()">
                 <option value="line">Line</option>
                 <option value="pie">Pie</option>
                 <option value="table">Tabla</option>
@@ -32,8 +32,8 @@
     <div class="col-sm-1">
         <h5 class="box-title">Series: </h5>
     </div>
-    <div class="col-sm-5">
-        <a class="btn btn-info btn-xs" ng-click="$ctrl.addSerie()"> Agregar serie </a>
+    <div class="col-sm-8">
+       * Se encontraron {{$ctrl.graphic.series.length}} series en el Procedure
     </div>
 </div> 
 
@@ -41,24 +41,30 @@
     <tbody>
         <tr>
             <th style="width: 10px">#</th>
-            <th>Tipo</th>
-            <th>Etiqueta</th>
-            <th>Columna</th>
+            <th>ELEMENTO</th>
+            <th>SERIE NOMBRE</th>
+            <th>TIPO GRAFICO</th>
+            <th>UNIDAD</th>
             <th></th>
         </tr>
         <tr ng-repeat="serie in $ctrl.graphic.series">
             <td>#</td>
+            <td>{{serie.NAME_FROM_PROCEDURE}}</td>
+             <td>
+                <input class="form-control" type="text" ng-model="serie.SERIE_NAME">
+            </td>
             <td>
-                <select  class="form-control" name="serie-tipo" id="" ng-model="serie.SUBGRAPHIC_TYPE">
-                    <option value="line">Line</option>
-                    <option value="column">Column</option>
+                <select  class="form-control" name="serie-tipo" id="" 
+                        ng-model="serie.SUBGRAPHIC_TYPE" 
+                        ng-disabled="$ctrl.subGraphicDisabled">
+                    <option value="line">Linea</option>
+                    <option value="column">Columna</option>
+                    <option value="area">Area</option>
                 </select>
             </td>
+           
             <td>
-                <input class="form-control" type="text" ng-model="serie.NAME">
-            </td>
-            <td>
-                <input class="form-control" type="text" ng-model="serie.COLUMNA">
+                <input class="form-control" type="text" ng-model="serie.UNIDAD" placeholder="Usar unidad del grafico">
             </td>
             <td>
                 <a  ng-click="$ctrl.removeSerie($index)"> <i class="fa fa-trash"></i></a>

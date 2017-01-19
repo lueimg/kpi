@@ -31,7 +31,18 @@ class Content extends Controller
     
     protected function postAction($request , $response)
     {
-        $results = $this->model->save((object)$request->getParams());
+
+        $options = $this->getUrlSegment(1);
+
+        switch ($options) {
+            case 'verifySeries' : 
+                $results =  $this->model->verifySeries((object)$request->getParams());
+                break;
+            default:
+                 $results = $this->model->save((object)$request->getParams());
+         }
+
+        // $results = $this->model->save((object)$request->getParams());
         return $response->withJson($results, $results['status']);
     }
 

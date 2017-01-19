@@ -7,10 +7,23 @@ var GraphicCtrl = function () {
 
     vm.addSerie = () => vm.graphic.series.push({});
     vm.removeSerie = (index) => vm.graphic.series.splice(index, 1);
+
+    vm.updateSubGraphicType = () => {
+      switch(vm.graphic.graphic_type) {
+        case 'pie':
+          vm.graphic.series.forEach((serie) => {
+            serie.SUBGRAPHIC_TYPE = '';
+          });
+           vm.subGraphicDisabled = true;
+          break;
+        default:
+          vm.subGraphicDisabled = false;
+      }
+    }
 }
 
 angular.module('doc.features').component('graphicFieldComponent', {
-  template: require('./graphic.component.html'),
+  template: require('./graphic-field.component.html'),
   controller: [ GraphicCtrl],
   bindings: {
     graphic: "=",

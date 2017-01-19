@@ -9,6 +9,12 @@ angular
         },
         update: {
           method: 'PUT'
+        },
+        verifySeries: {
+          isArray: false,
+          method: 'POST',
+          url: ServicesConfig.url + '/Content/verifySeries'
         }
+
       });
   }]);

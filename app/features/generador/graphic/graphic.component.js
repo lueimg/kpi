@@ -9,23 +9,23 @@ var Controller = function ($scope) {
         "name": serie.NAME,
         "id": serie.ID,
         data: _.map(data, (item) =>  item.VALOR * 1  ),
-        type: serie.SUBGRAPHIC_TYPE
+        type: serie.SUBGRAPHIC_TYPE,
+        unidad: serie.UNIDAD
       };
     }
 
     vm.$onInit = () => {
-      vm.series = [];
-      vm.graphic.series.forEach((serie) => { vm.series.push(vm.getSerie(serie)); });
-
       vm.xAxisData = [];
       vm.title = vm.graphic.title;
       vm.graphic_type = vm.graphic.graphic_type;
 
       // Data for graphic
       vm.chartConfig = {
-
       chart: {
-        type: vm.graphic_type
+        type: vm.graphic.graphic_type
+      },
+      title: {
+        text: vm.graphic.title
       },
       plotOptions: {
         series: {
@@ -33,33 +33,117 @@ var Controller = function ($scope) {
           cursor: 'pointer',
               events: {
                   click: function (event) {
-                    var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('')}`;
-                    vm.onPointClick(key);
+                    switch(vm.graphic.graphic_type) {
+                      case 'area':
+                      case 'line': 
+                        var pointValue = _.filter(this.points, ["state", "hover"])[0].y;
+                        var title = `${this.userOptions.name}: (${pointValue}) `;
+                        var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('').trim()}`;
+                        break;
+                      case 'pie':
+                       
+                        var point = _.filter(this.points, ["state", "hover"])[0];
+                        console.log(point);
+                        var title = `${point.name}: (${point.y}) `;
+                        var key = `${point.id}${vm.rangeOfWeekYear}`;
+                        break;
+
+                    }
+                    
+
+                    console.log(title);
+                    console.log(key);
+                    vm.onPointClick(key, title);
                     $scope.$apply()
                   }
               }
         }
       },
-      series: vm.series,
-      title: {
-        text: vm.title
-      },
-      xAxis: {
-        categories: _.map(vm.xaxis, (item) => `${item.substr(0, 4)} - ${item.substr(4, 2)}`)
-      },
-      yAxis: {
-          title: {
-              text: vm.graphic.und
-          }
-        },
+      series: [],
+      };
+
+      switch(vm.graphic.graphic_type) {
+        case 'area':
+        case 'line': 
+          vm.chartConfig.xAxis = {
+            categories: _.map(vm.data, (item) => item.REFFECHA)
+          };
+
+          vm.chartConfig.yAxis = {
+            title: {
+                text: vm.graphic.und
+            }
+          };
+          // Series 
+          vm.chartConfig.series = vm.graphic.series.map((serie) => {
+            return {
+              name: serie.SERIE_NAME,
+              unidad: serie.UNIDAD,
+              id: serie.ID,
+              type: serie.SUBGRAPHIC_TYPE,
+              data: _.filter(vm.data, ['ELEMENTO', serie.NAME_FROM_PROCEDURE]).map((item) => item.VALOR1*1)
+            }
+          });
+          let xAxisPoints = vm.chartConfig.xAxis.categories.length = vm.chartConfig.series[0].data.length;
+          break;
+        case 'pie':
+          vm.rangeOfWeekYearArray = vm.data[vm.data.length -1].REFFECHA.split('-')
+          vm.rangeOfWeekYear = `${vm.rangeOfWeekYearArray[1]}${vm.rangeOfWeekYearArray[0]}`;
+          vm.chartConfig.plotOptions.pie = {
+              allowPointSelect: true,
+              cursor: 'pointer'  
+            };
+            // Series 
+            vm.chartConfig.series = [
+              {
+                name: vm.graphic.title,
+                colorByPoint: true,
+                data: vm.graphic.series.map((serie) => {
+                  return {
+                    name: serie.SERIE_NAME,
+                    id: serie.ID,
+                    y: _.filter(vm.data, ['ELEMENTO', serie.NAME_FROM_PROCEDURE]).map((item) => item.VALOR1*1)[0]
+                  }
+                })
+              }
+            ];
+    
+          break;
+
       }
+
+      // If there is multiples Unids 
+      let multipleAxis = Object.keys(_.groupBy(vm.graphic.series, 'UNIDAD'));
+      if (multipleAxis.length > 1) {
+        vm.chartConfig.chart = {
+            zoomType: 'xy'
+        };
+
+        vm.chartConfig.xAxis.crosshair = true;
+        vm.chartConfig.xAxis = [vm.chartConfig.xAxis];
+
+        vm.chartConfig.yAxis = multipleAxis.map((yaxis) => {
+          return {title: {text: yaxis}, opposite: true};
+        })
+        vm.chartConfig.yAxis[0].opposite = false;
+
+        vm.chartConfig.series.forEach((serie) => {
+          serie.yAxis = multipleAxis.indexOf(serie.unidad);
+        })
+
+
+      }
+      
+
+      console.log(vm.chartConfig);
       vm.isLoading = false;
     }
 
     vm.currentPoint = '';
-    vm.onPointClick = (key) => vm.currentPoint = key;
-
-    
+    vm.onPointClick = (key, title) => {
+      vm.currentPoint = key;
+      vm.pointTitle = title;
+    };
 
 }
 
@@ -68,7 +152,6 @@ angular.module('doc.features').component('graphicComponent', {
   controller: ['$scope', Controller],
   bindings: {
       data: "<",
-      graphic: "<",
-      xaxis: "<"
+      graphic: "<"
   }
 });

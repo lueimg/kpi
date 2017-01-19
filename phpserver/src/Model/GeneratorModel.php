@@ -66,29 +66,22 @@ class GeneratorModel extends Model
     public function generateContentForGraphics($data = []) {
         
         $content = $this->contentModel->fetchById($data->content_id)['results'];
-        // return $content;
+        // $this->debug($data);
         // Execute Procedure
-        $query = "EXECUTE $content->PROCEDURE()";
-        // $this->execQuery($query);
+        $anio = $data->year;
+        $semana= $data->week;
+        $antiguedad = $content->WEEKSRANGE;
+        $procedure =$content->PROCEDURE;
+        $query = "BEGIN $procedure($semana, $anio, $antiguedad ); END;";
+        $this->execQuery($query);
 
-        $from = " FROM KPI_RESUMEN  ";
-        $where = "";
-        $order = " ORDER BY KEY ASC ";
+       // Get data from Temporal
+        $seriesDataRaw = $this->getListFromTemporalTableGraphic();
         
-        $endQuery = "$from $where $order";
-        // Y axis Data
-        $queryXAxis = "SELECT DISTINCT  ANIO||LPAD(SEMANA, 2, '0') KEY $endQuery";
-        $YAxis = $this->getList($queryXAxis);
-        $XAxisData = [];
-        foreach($YAxis as $row) {
-            $XAxisData[] = $row->KEY;
-        }
-
-        // Data Per serie
-        $queryData = "SELECT  ANIO||LPAD(SEMANA, 2, '0') KEY , ANIO , SEMANA , TO_CHAR(VALOR, '0.99999')* 100 VALOR, UGW_NAME, KPI $endQuery";
-        $seriesDataRaw = $this->getList($queryData);
-
-        $data = [ "graphics" => $content->graphs, "xAxis" => $XAxisData, "dataSeries"=> $seriesDataRaw];
+        $data = [ 
+            "graphics" => $content->graphs, 
+            "data"=> $seriesDataRaw
+        ];
 
         return [
             "status" => 200,
@@ -96,5 +89,7 @@ class GeneratorModel extends Model
         ];
 
     }
+
+    
 
 }

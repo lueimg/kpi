@@ -10,6 +10,7 @@ abstract class Model
     protected $tables = [];
     protected $newId =  '';
     protected $currentId = '';
+    protected $temporalTable = "KPI_TMP_REP_GRAFICO";
 
     /**
      * Constructor.
@@ -102,9 +103,13 @@ abstract class Model
         ];
     }
 
-    public function debugger($data) {
+    public function debug($data) {
         var_dump($data);
         die();
+    }
+
+    public function getListFromTemporalTableGraphic() {
+        return  $this->getList("SELECT * FROM $this->temporalTable");
     }
 
 }

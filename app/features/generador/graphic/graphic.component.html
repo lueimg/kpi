@@ -2,8 +2,9 @@
     <highchart ng-if="!$ctrl.isLoading" id="chart1" config="$ctrl.chartConfig"></highchart>
 </div>
 <div class="col-sm-4">
-    <comment-block-component key="$ctrl.currentPoint"></comment-component>
+    <comment-block-component key="$ctrl.currentPoint" 
+                             title="{{$ctrl.pointTitle}}"></comment-component>
 </div>
 <div class="col-sm-12">
-    <comment-block-component key="$ctrl.graphic.id"></comment-component> 
+    <comment-block-component key="$ctrl.graphic.id" title="Comentarios del Gráfico"></comment-component> 
 </div>

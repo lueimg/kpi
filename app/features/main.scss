@@ -164,12 +164,30 @@ $required-marker-color: #b94a48;
   }
 }
 .comment-group {
-    height: 300px;
+   max-height: 300px;
     overflow: scroll;
+    min-height: 150px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 50px;
 }
 
 .comment-item {
   .username, .description {
     margin-left: 0;
+  }
+}
+.selected-filters {
+  padding: 10px 0;
+  .selected-option {  
+    border: 1px solid #f9f9f9;
+    background: #eaeaea;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0 3px;
+    display: inline-block;
+    box-shadow: 1px 1px 1px #ccc;
+    font-weight: bold;
+    min-width: 50px;
+    text-align: center;
   }
 }

@@ -14,6 +14,7 @@ var Controller = function (CommentSvc) {
     }
 
     vm.showCommentForm = function () {
+        console.log(`#addComment-key-${vm.key}`);
         angular.element(`#addComment-key-${vm.key}`).modal();
     };
 
@@ -28,6 +29,8 @@ var Controller = function (CommentSvc) {
         });
     }
     vm.getCommentList = () => {
+        if (!vm.key) return false;
+        
         CommentSvc.query({key: vm.key}, (response) => {
             vm.list = response.results.list;
         });
@@ -38,6 +41,7 @@ angular.module('doc.features').component('commentBlockComponent', {
   template: require('./comment-block.component.html'),
   controller: ['CommentSvc', Controller],
   bindings: {
-      key: "<"
+      key: "<",
+      title: "@"
   }
 });

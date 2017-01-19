@@ -3,8 +3,9 @@ var GeneradorCtrl = function (ReportesSvc, GeneradorSvc) {
     vm.isLoading = false;
     vm.filtros = {
         year : moment().format('YYYY') * 1,
-        week: '2',
-        content_id: '86'
+        week: 2,
+        content_id: '',
+        content_name: ''
     };
     vm.yearList = [];
     vm.weekList = [];
@@ -16,14 +17,15 @@ var GeneradorCtrl = function (ReportesSvc, GeneradorSvc) {
     ReportesSvc.query((response)=> vm.reports = response.results.list);
     vm.selectContent = (content) => {
        vm.filtros.content_id = content.ID;
-       vm.generateContent();
+       vm.filtros.content_name = content.NAME;
+       vm.generateGraphicsFromContent();
     };
 
     vm.graphics = [];
     vm.xAxis = [];
     vm.dataSeries = [];
     
-    vm.generateContent = () => {
+    vm.generateGraphicsFromContent = () => {
         if (!vm.filtros.content_id) return false;
         if (!vm.filtros.week) return false;
         if (!vm.filtros.year) return false;
@@ -31,13 +33,12 @@ var GeneradorCtrl = function (ReportesSvc, GeneradorSvc) {
         vm.isLoading = true;
         GeneradorSvc.get(vm.filtros, (response) => {
             vm.graphics = response.results.graphics;
-            vm.xAxis = response.results.xAxis;
-            vm.dataSeries = response.results.dataSeries;
+            vm.data = response.results.data;
             vm.isLoading = false;
         });
     };
 
-     vm.generateContent();
+    //  vm.generateGraphicsFromContent();
 }
 
 angular.module('doc.features').component('generadorComponent', {
