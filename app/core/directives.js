@@ -37,8 +37,89 @@
     return {
       restrict: 'E',
       template: require('./templates/sidebarMenu.html'),
-      controller: ['$scope', function ($scope) {
-       
+      controller: ['$scope', '$location', function ($scope, $location) {
+        var vm = $scope,
+            currentPath = '#' + $location.path();
+          vm.mainMenu = [
+            {
+              isAllowed: true,
+              liClass: 'treeview',
+              aLink: '#/reportes',
+              aIcon: 'fa fa-cog',
+              aText: 'Mantenimientos',
+              isActive: false,
+              subMenu: [
+                {
+                  isAllowed: true,
+                  liClass: '',
+                  aLink: '#/reportes',
+                  aIcon: 'fa fa-circle-o',
+                  aText: 'Registros'
+                },
+                {
+                  isAllowed: true,
+                  liClass: '',
+                  aLink: '#/contenidos',
+                  aIcon: 'fa fa-circle-o',
+                  aText: 'Contenidos'
+                },
+                {
+                  isAllowed: true,
+                  liClass: '',
+                  aLink: '#/comentarios',
+                  aIcon: 'fa fa-circle-o',
+                  aText: 'Comentarios'
+                }
+              ]
+            },
+           
+            {
+              isAllowed: true,
+              liClass: 'treeview',
+              aLink: '#/generador',
+              aIcon: 'fa fa-th',
+              aText: 'Reportes',
+              isActive: false,
+              subMenu: [
+                {
+                  isAllowed: true,
+                  liClass: '',
+                  aLink: '#/generador',
+                  aIcon: 'fa fa-circle-o',
+                  aText: 'Generador'
+                },
+                {
+                  isAllowed: true,
+                  liClass: '',
+                  aLink: '#/exportador',
+                  aIcon: 'fa fa-circle-o',
+                  aText: 'Exportador'
+                }
+              ]
+            }
+          ];
+
+          // Select current path
+          vm.mainMenu.some((menu) => {
+            var isRouteActive = menu.subMenu.some((item) => {
+              if (item.aLink == currentPath) {
+                item.isActive = true;
+                return true;
+              }
+            });
+            if (isRouteActive) {
+              menu.isActive = true;
+              return true;
+            }
+          });
+        
+        vm.onClickSubMenu = (menu, item) => {
+          menu.forEach((subItem) => {
+            subItem.isActive = false;
+          });
+          // Update current menu
+          item.isActive = true;
+        };
       }]
     };
   })

@@ -152,6 +152,8 @@ angular.module('doc.features').component('graphicComponent', {
   controller: ['$scope', Controller],
   bindings: {
       data: "<",
-      graphic: "<"
+      graphic: "<",
+      hideComments: '<',
+      charId: '@'
   }
 });

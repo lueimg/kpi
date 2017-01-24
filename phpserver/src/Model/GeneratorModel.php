@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Model\ReportsModel;
 use App\Model\ContentModel;
+use App\Model\CommentModel;
 
 class GeneratorModel extends Model
 {
@@ -27,6 +28,7 @@ class GeneratorModel extends Model
 
         $this->reportsModel = new ReportsModel();
         $this->contentModel = new ContentModel();
+        $this->commentModel = new CommentModel();
 
     }
 
@@ -63,7 +65,12 @@ class GeneratorModel extends Model
         ];
     }
 
-    public function generateContentForGraphics($data = []) {
+    /**
+    * $data->conntent_id
+    * $data->year
+    * $data->week
+    */
+    public function contentsById($data = []) {
         
         $content = $this->contentModel->fetchById($data->content_id)['results'];
         // $this->debug($data);
@@ -86,6 +93,73 @@ class GeneratorModel extends Model
         return [
             "status" => 200,
             "results" => $data
+        ];
+
+    }
+
+    public function allContent($data = []) {
+        $week = $data->week;
+        $anio = $data->year;
+
+        $reports = $this->reportsMenu()["results"]['list'];
+        $graphicList = [];
+        // Addin generateContentForGraphics
+        foreach($reports as &$report) {
+           if (count($report['contents']) > 0) {
+               $contentData = [];
+               foreach($report['contents'] as &$content) {
+                    $query = (object)[];
+                    $query->content_id = $content->ID;
+                    $query->year = $anio;
+                    $query->week = $week;
+                    $graphics = (object)$this->contentsById($query)['results']; // return an array
+                    $content->graphics = $graphics->graphics;
+                    $contentData = $graphics->data;
+                    
+                    // Add coments each graphic
+                    if (count($content->graphics) > 0) {
+                        foreach($content->graphics as &$graphic) {
+                            $comments = $this->commentModel->fetchByKey($graphic['id'])["results"]['list'];
+                            $graphic['data'] = $contentData;
+                            $graphic['comments'] = (array)$comments;
+                        }
+                    }
+                    $graphicList = array_merge($graphicList, $content->graphics);
+               }
+           }
+           if (count($report['subreports']) > 0) {
+               foreach($report['subreports'] as &$subreport) {
+                    if (count($subreport['contents']) > 0) {
+                        foreach($subreport['contents'] as &$content) {
+                            $query = (object)[];
+                            $query->content_id = $content->ID;
+                            $query->year = $anio;
+                            $query->week = $week;
+                            $graphics = (object)$this->contentsById($query)['results']; // return an array
+                            $content->graphics = $graphics->graphics;
+                            $contentData = $graphics->data;
+                            
+                            // Add coments each graphic
+                            if (count($content->graphics) > 0) {
+                                foreach($content->graphics as &$graphic) {
+                                    $comments = $this->commentModel->fetchByKey($graphic['id'])["results"]['list'];
+                                    $graphic['data'] = $contentData;
+                                    $graphic['comments'] = (array)$comments;
+                                }
+                            }
+                            $graphicList = array_merge($graphicList, $content->graphics);
+                        }
+                    }
+               }
+           }
+        }
+
+        return [
+            "status" => 200,
+            "results" => [
+                "list" => $reports,
+                "graphics" => $graphicList
+            ]
         ];
 
     }

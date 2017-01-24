@@ -26,8 +26,11 @@ class Generator extends Controller
             case 'reportsMenu' : 
                 $results =  $this->model->reportsMenu((object)$request->getParams());
                 break;
+             case 'allContent' : 
+                $results =  $this->model->allContent((object)$request->getParams());
+                break;
             default:
-                $results =  $this->model->generateContentForGraphics((object)$request->getParams());
+                $results =  $this->model->contentsById((object)$request->getParams());
          }
 
         return $response->withJson($results, $results['status']);

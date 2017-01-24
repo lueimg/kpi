@@ -1,21 +1,27 @@
 <!-- sidebar menu: : style can be found in sidebar.less -->
 <ul class="sidebar-menu">
     <li class="header">MENÚ PRINCIPAL</li>
-    
-    <li class="treeview">
-        <a href="">
-            <i class="fa fa-users"></i> <span>Mantenimientos</span> <i class="fa fa-angle-left pull-right"></i>
+    <li ng-repeat="menu in mainMenu"
+        ng-if="menu.isAllowed"
+        ng-click="onClickSubMenu(mainMenu, menu)"
+        ng-class="{active: menu.isActive}"
+        class="{{menu.liClass}}">
+        <a ng-href="{{menu.aLink}}">
+            <i class="{{menu.aIcon}}"></i> 
+            <span>{{menu.aText}}</span> 
+            <i ng-if="menu.subMenu.length > 0 "
+               class="fa fa-angle-left pull-right"></i>
         </a>
-        <ul class="treeview-menu">
-            <li><a href="#/reportes"><i class="fa fa-circle-o"></i>Reportes</a></li>
-            <li><a href="#/contenidos"><i class="fa fa-circle-o"></i>Contenidos</a></li>
-            <li><a href="#/comentarios"><i class="fa fa-circle-o"></i>Comentarios</a></li>
-        </ul>
-    </li>
-    <li class="treeview">
-        <a><i class="fa fa-cog"></i> <span>Generador </span> <i class="fa fa-angle-left pull-right"></i> </a>
-        <ul class="treeview-menu">
-            <li> <a href="#/generador"> <i class="fa fa-circle-o"></i> Reportes </a>  </li>
+        <ul ng-if="menu.subMenu.length > 0"
+            class="treeview-menu">
+            <li ng-repeat="item in menu.subMenu" 
+                ng-if="item.isAllowed"
+                ng-class="{active: item.isActive}"
+                ng-click="onClickSubMenu(menu.subMenu, item)">
+                <a ng-href="{{item.aLink}}">
+                    <i class="{{item.aIcon}}"></i> {{item.aText}}
+                </a>
+            </li>
         </ul>
     </li>
 </ul>

@@ -15,6 +15,12 @@ angular
           method: 'GET',
           url: ServicesConfig.url + '/Generator/reportsMenu'
 
+        },
+        getAllContent : {
+          isArray: false,
+          method: 'GET',
+          url: ServicesConfig.url + '/Generator/allContent'
+
         }
       });
 
