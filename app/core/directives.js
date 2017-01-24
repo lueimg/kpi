@@ -54,7 +54,7 @@
                   liClass: '',
                   aLink: '#/reportes',
                   aIcon: 'fa fa-circle-o',
-                  aText: 'Registros'
+                  aText: 'Reportes'
                 },
                 {
                   isAllowed: true,
@@ -86,7 +86,7 @@
                   liClass: '',
                   aLink: '#/generador',
                   aIcon: 'fa fa-circle-o',
-                  aText: 'Generador'
+                  aText: 'Gráficos'
                 },
                 {
                   isAllowed: true,

@@ -10,7 +10,7 @@
             </div>
             <form class="form-horizontal" name="form" validate>
                 <div class="box-body">
-                    <div class="form-group"
+                    <!--<div class="form-group"
                          ng-show="!!$ctrl.reporte.ID">
                         <label for="descripcion"
                                class="col-sm-2 control-label">
@@ -19,7 +19,7 @@
                         <div class="col-sm-10">
                             <p class="form-control-static">{{ $ctrl.reporte.ID | leftPad }}</p>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-group">
                         <label for="descripcion"
                                class="col-sm-2 control-label"
@@ -36,15 +36,15 @@
                         <label for="descripcion"
                                class="col-sm-2 control-label">Sub Reportes: </label>
                         <div class="col-sm-10">
-                            <div class="row">
-                                <div class="col-sm-12" ng-repeat="item in $ctrl.reporte.subreports track by $index">
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" required ng-model="$ctrl.reporte.subreports[$index]">
-                                </div>
-                                <div class="col-sm-6"> 
-                                    <a  ng-click="$ctrl.removeSubReport($index)"> <i class="fa fa-trash"></i></a>
-                                </div>
-                            </div>  
+                            <div class="row ">
+                                <div class="col-sm-12 subreports-item" ng-repeat="item in $ctrl.reporte.subreports track by $index">
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control" required ng-model="$ctrl.reporte.subreports[$index]" placeholder="sub reporte ...">
+                                    </div>
+                                    <div class="col-sm-6"> 
+                                        <a  ng-click="$ctrl.removeSubReport($index)"> <i class="fa fa-trash"></i></a>
+                                    </div>
+                                </div>  
                             </div>
                             <div class="col-sm-3">
                                  <a class="btn btn-block btn-success btn-sm"  ng-click="$ctrl.addSubReport()">Agregar Sub Reporte</a>

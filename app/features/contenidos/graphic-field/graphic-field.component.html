@@ -1,7 +1,7 @@
 <div class="form-group">
     <div class="row">
         <label for="descripcion" class="col-sm-2 control-label" required-field>Título: </label>
-        <div class="col-sm-7"> 
+        <div class="col-sm-8"> 
             <input type="text" class="form-control" id="titulo" placeholder="titulo del grafico"
                 required
                 maxlength="500"
@@ -13,18 +13,26 @@
         </div>
      </div>
      <div class="row">
-         <label for="descripcion" class="col-sm-2 control-label" required-field>Grafico: </label>
-         <div class="col-sm-3">
-             <select class="form-control" name="graphic_type" id="" ng-model="$ctrl.graphic.graphic_type" ng-change="$ctrl.updateSubGraphicType()">
-                <option value="line">Line</option>
-                <option value="pie">Pie</option>
-                <option value="table">Tabla</option>
-            </select>
-         </div>
+        <div class="col-sm-12">
+            <label for="descripcion" class="col-sm-2 control-label" required-field>Grafico: </label>
+            <div class="col-sm-3">
+                <select class="form-control" name="graphic_type" id="" ng-model="$ctrl.graphic.graphic_type" ng-change="$ctrl.updateSubGraphicType()">
+                    <option value="line">Line</option>
+                    <option value="pie">Pie</option>
+                    <!--<option value="table">Tabla</option>-->
+                </select>
+            </div>
+        </div>
         
-         <label for="descripcion" class="col-sm-1 control-label" required-field>Unidad: </label>
-         <div class="col-sm-3">
-             <input class="form-control" type="text" ng-model="$ctrl.graphic.und">
+         <div class="col-sm-12">
+            <label for="descripcion" class="col-sm-2 control-label" required-field>Label Axis Y: </label>
+            <div class="col-sm-3">
+                <input class="form-control" type="text" ng-model="$ctrl.graphic.labely">
+            </div>
+            <label for="descripcion" class="col-sm-2 control-label" required-field>Sufijo </label>
+            <div class="col-sm-3">
+                <input class="form-control" type="text" ng-model="$ctrl.graphic.suffix">
+            </div>
          </div>
      </div>
 </div>
@@ -44,8 +52,9 @@
             <th>ELEMENTO</th>
             <th>SERIE NOMBRE</th>
             <th>TIPO GRAFICO</th>
-            <th>UNIDAD</th>
-            <th></th>
+            <th>Label Y Axis</th>
+            <th>Sufijo</th>
+            
         </tr>
         <tr ng-repeat="serie in $ctrl.graphic.series">
             <td>#</td>
@@ -58,17 +67,20 @@
                         ng-model="serie.SUBGRAPHIC_TYPE" 
                         ng-disabled="$ctrl.subGraphicDisabled">
                     <option value="line">Linea</option>
+                    <option value="spline">Spline</option>
                     <option value="column">Columna</option>
+                    <option value="bar">Bar</option>
                     <option value="area">Area</option>
                 </select>
             </td>
            
             <td>
-                <input class="form-control" type="text" ng-model="serie.UNIDAD" placeholder="Usar unidad del grafico">
+                <input class="form-control" type="text" ng-model="serie.LABELY" placeholder="LABEL Y por Defecto">
             </td>
             <td>
-                <a  ng-click="$ctrl.removeSerie($index)"> <i class="fa fa-trash"></i></a>
+                <input class="form-control" type="text" ng-model="serie.SUFFIX" placeholder="SUFIX POR DEFECTO">
             </td>
+           
 
         </tr>
     </tbody>

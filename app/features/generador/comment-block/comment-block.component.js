@@ -14,6 +14,10 @@ var Controller = function (CommentSvc) {
     }
 
     vm.showCommentForm = function () {
+        vm.comment =  {
+            user: '',
+            comment: ''
+        };
         console.log(`#addComment-key-${vm.key}`);
         angular.element(`#addComment-key-${vm.key}`).modal();
     };
@@ -23,10 +27,25 @@ var Controller = function (CommentSvc) {
         if (!vm.comment.comment) return false;
         
         vm.comment.key = vm.key;
-        CommentSvc.save(vm.comment, (response ) => {
-            vm.comment = { user: '', comment: '' };
-            vm.getCommentList();
-        });
+        if (vm.comment.id) {
+            CommentSvc.update(vm.comment, (reponse) => {
+                vm.comment = { user: '', comment: '' };
+                vm.getCommentList();
+            });
+        } else {
+            CommentSvc.save(vm.comment, (response ) => {
+                vm.comment = { user: '', comment: '' };
+                vm.getCommentList();
+            });
+        }
+        
+    }
+    vm.editComment = (comment) => {
+        vm.comment.id = comment.ID;
+        vm.comment.user = comment.USUARIO;
+        vm.comment.comment = comment.COMENTARIO;
+        // console.log(vm.comment);
+        angular.element(`#addComment-key-${vm.key}`).modal();
     }
     vm.getCommentList = () => {
         if (!vm.key) return false;

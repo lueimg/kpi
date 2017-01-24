@@ -95,6 +95,17 @@ class CommentModel extends Model
 
     }
 
+    public function update($data)
+    {
+        $table = $this->table;
+        $query = "UPDATE $table SET USUARIO= '$data->user' , COMENTARIO = '$data->comment' WHERE ID = $data->id";
+        $results = $this->execQuery($query);
+        if ($results['error']) return $this->jsonResponse($results, 500);
+
+        return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 200);
+
+    }
+
     public function delete($data)
     {
         

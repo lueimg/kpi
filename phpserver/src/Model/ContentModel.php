@@ -75,7 +75,7 @@ class ContentModel extends Model
         LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
         LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
         LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) FIELDS_DATA, COUNT(1) FIELDS_TOTAL FROM  KPI_CONTENTS_FIELDS WHERE STATUS = 1 GROUP BY CONTENT_ID) FIELDS ON FIELDS.CONTENT_ID = CON.ID
-        LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||TITLE||'*'||TYPE||'*'||UNID, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
+        LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||TITLE||'*'||TYPE||'*'||LABELY||'*'||SUFFIX, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
         
         $qWhere = "  WHERE 1 = 1  AND CON.ID = $content_id";
         $orderColumn = 'ID';
@@ -83,6 +83,8 @@ class ContentModel extends Model
         $qFullSelect = "$qFields $qFrom $qWhere";
 
         $result = $this->getList($qFullSelect)[0];
+
+        $result->WEEKSRANGE = $result->WEEKSRANGE*1;
 
         // queries
         $result->FIELDS = [];
@@ -108,7 +110,8 @@ class ContentModel extends Model
                     "id" => $data[0],
                     "title" => $data[1],
                     "graphic_type"=>$data[2], 
-                    "und"=>$data[3], 
+                    "labely"=>$data[3], 
+                    "suffix"=>$data[4], 
                     "series"=> $series);
             }
         }
@@ -140,13 +143,14 @@ class ContentModel extends Model
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
                 
-                $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, UNID, TITLE) 
-                VALUES ($seqGraphics.nextval, $newContentID, '$graph->graphic_type', '$graph->und', '$graph->title')";
+                $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, LABELY, TITLE, SUFFIX) 
+                VALUES ($seqGraphics.nextval, $newContentID, '$graph->graphic_type', '$graph->labely', '$graph->title', '$graph->suffix')";
 
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                 $graphicUnidad = $graph->und;
+                 $graphicLabel = $graph->labely;
+                 $graphicSuffix = $graph->suffix;
                 // Insert Series
                 if (count($graph->series))
                 {   
@@ -156,9 +160,10 @@ class ContentModel extends Model
                         $seriesTable = $this->tables->series->name;
                         $seqSeries = $this->tables->series->seq;
                         $seqGraphic =  $this->tables->graphics->seq;
-                        $serieUnidad = !empty($serieObj->UNIDAD) ? $serieObj->UNIDAD :   $graphicUnidad;
-                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, UNIDAD) 
-                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad')";
+                        $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
+                        $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
+                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
+                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
                         $results = $this->execQuery($query);
                         if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
                     }
@@ -182,25 +187,6 @@ class ContentModel extends Model
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
-        // $results = $this->execQuery("UPDATE KPI_CONTENTS_FIELDS SET STATUS = 0 where CONTENT_ID = $data->ID");
-        // if ($results['error'])  return $this->jsonResponse($results, 500);
-
-        // if (count($data->FIELDS))
-        // {   
-        //     foreach($data->FIELDS as $value)
-        //     {
-        //         $secondaryTable = $this->tables->contents_fields->name;
-        //         $seq = $this->tables->contents_fields->seq;
-              
-        //         $query = "INSERT INTO $secondaryTable (ID, NAME, CONTENT_ID) VALUES ($seq.nextval, '$value', $data->ID)";
-        //         $results = $this->insert($query, $seq);
-        //         if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
-        //     }
-        // }
-
-        $results = $this->execQuery("UPDATE KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
-        if ($results['error'])  return $this->jsonResponse($results, 500);
-
         if (count($data->graphs))
         {   
             foreach($data->graphs as $graphic)
@@ -208,13 +194,15 @@ class ContentModel extends Model
                 $graph = (object)$graphic;
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
-                $query = "INSERT INTO $graphicsTable (ID, TITLE, CONTENT_ID, TYPE, UNID) 
-                            VALUES ($seqGraphics.nextval, '$graph->title', $data->ID, '$graph->graphic_type', '$graph->und')";
+                $query = "UPDATE $graphicsTable SET TITLE = '$graph->title', TYPE = '$graph->graphic_type', LABELY = '$graph->labely', SUFFIX = '$graph->suffix' WHERE ID = $graph->id";
+                // $query = "UPDATE $graphicsTable (ID, TITLE, CONTENT_ID, TYPE, LABELY, SUFFIX) 
+                //           VALUES ($seqGraphics.nextval, '$graph->title', $data->ID, '$graph->graphic_type', '$graph->labely', '$graph->suffix')";
 
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                $graphicUnidad = $graph->und;
+                $graphicLabel = $graph->labely;
+                $graphicSuffix = $graph->suffix;
                 // Insert Series
                 if (count($graph->series))
                 {   
@@ -224,14 +212,20 @@ class ContentModel extends Model
                         $seriesTable = $this->tables->series->name;
                         $seqSeries = $this->tables->series->seq;
                         $seqGraphic =  $this->tables->graphics->seq;
-                        $serieUnidad = !empty($serieObj->UNIDAD) ? $serieObj->UNIDAD : $graphicUnidad;
-                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, UNIDAD) 
-                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad')";
+                        $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
+                        $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
+                        $query= "UPDATE $seriesTable SET SUBGRAPHIC_TYPE =  '$serieObj->SUBGRAPHIC_TYPE',SERIE_NAME =  '$serieObj->SERIE_NAME', NAME_FROM_PROCEDURE= '$serieObj->NAME_FROM_PROCEDURE', LABELY = '$serieUnidad', SUFFIX= '$serieSuffix' WHERE ID = $serieObj->ID";
+
+                        // $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
+                        //             VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
                         $results = $this->execQuery($query);
                         if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
                     }
                 }
             }
+        } else {
+            $results = $this->execQuery("UPDATE KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
+            if ($results['error'])  return $this->jsonResponse($results, 500);
         }
         
         return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 201);
@@ -249,22 +243,29 @@ class ContentModel extends Model
     public function verifySeries ($data)
     {
         // var_dump($data);die();
-        $anio = $data->anio;
+        $anio = $data->anio ;
         $semana= $data->semana;
         $antiguedad = $data->antiguedad;
         $procedure =$data->procedure;
 
+        // $anio = 2017;
+        // $semana= 1;
+        // $antiguedad = 10;
+        // $procedure ="sp_test_multiaxis";
+
         $query = "BEGIN $procedure($semana, $anio, $antiguedad ); END;";
         $results = $this->execQuery($query);
         if ($results['error'])  return $this->jsonResponse($results, 500);
-
-        // Get data from Temporal
-        $data = $this->getList("SELECT DISTINCT(ELEMENTO) FROM $this->temporalTable");
         $result = [];
-
-        foreach($data as $row) {
-            $result[] = $row->ELEMENTO;
+        // Get data from Temporal
+        for ($i=1; $i < 7 ; $i++) { 
+            $data = $this->getList("SELECT DISTINCT(ELEMENTO) FROM $this->temporalTable WHERE VALOR$i IS NOT NULL");
+            
+            foreach($data as $row) {
+                $result[] = $row->ELEMENTO. '-VALOR'.$i;
+            }
         }
+        
          return [
             "status" => 200,
             "results" => $result

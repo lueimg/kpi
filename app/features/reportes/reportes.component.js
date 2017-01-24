@@ -21,8 +21,8 @@ var ReportesComponentCtrl = function (notification, ServicesConfig, ReportesSvc)
         },
         {
             columnHeaderDisplayName: 'Sub Reportes',
-            template: '{{item.SUBREPORTS_TOTAL  || 0}}',
-            sortKey: 'clasificacion'
+            template: '{{item.SUBREPORTS_TOTAL  || 0}}'
+            
         },
         {
             columnHeaderDisplayName: '',

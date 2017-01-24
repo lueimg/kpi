@@ -2,18 +2,7 @@ var Controller = function ($scope) {
     var vm = this;
     vm.isLoading = true;
 
-    vm.getSerie = (serie) => {
-      var data = _.filter(vm.data, [serie.COLUMNA, serie.NAME]);
-      
-      return {
-        "name": serie.NAME,
-        "id": serie.ID,
-        data: _.map(data, (item) =>  item.VALOR * 1  ),
-        type: serie.SUBGRAPHIC_TYPE,
-        unidad: serie.UNIDAD
-      };
-    }
-
+   
     vm.$onInit = () => {
       vm.xAxisData = [];
       vm.title = vm.graphic.title;
@@ -71,17 +60,30 @@ var Controller = function ($scope) {
 
           vm.chartConfig.yAxis = {
             title: {
-                text: vm.graphic.und
-            }
+                text: vm.graphic.labely
+            },
+            labels: {
+                format: '{value} ' + vm.graphic.suffix ,
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+
           };
           // Series 
           vm.chartConfig.series = vm.graphic.series.map((serie) => {
+            var elemento = serie.NAME_FROM_PROCEDURE.split('-')[0];
+            var campo = serie.NAME_FROM_PROCEDURE.split('-')[1];
             return {
               name: serie.SERIE_NAME,
-              unidad: serie.UNIDAD,
+              unidad: serie.LABELY,
+              suffix: serie.SUFFIX,
               id: serie.ID,
               type: serie.SUBGRAPHIC_TYPE,
-              data: _.filter(vm.data, ['ELEMENTO', serie.NAME_FROM_PROCEDURE]).map((item) => item.VALOR1*1)
+              tooltip: {
+                  valueSuffix: ' ' + serie.SUFFIX
+              },
+              data: _.filter(vm.data, ['ELEMENTO', elemento]).map((item) => item[campo]*1)
             }
           });
           let xAxisPoints = vm.chartConfig.xAxis.categories.length = vm.chartConfig.series[0].data.length;
@@ -91,18 +93,31 @@ var Controller = function ($scope) {
           vm.rangeOfWeekYear = `${vm.rangeOfWeekYearArray[1]}${vm.rangeOfWeekYearArray[0]}`;
           vm.chartConfig.plotOptions.pie = {
               allowPointSelect: true,
-              cursor: 'pointer'  
+              cursor: 'pointer',
+              dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
             };
+
+            vm.chartConfig.tooltip = {
+                  pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+              };
             // Series 
             vm.chartConfig.series = [
               {
                 name: vm.graphic.title,
                 colorByPoint: true,
                 data: vm.graphic.series.map((serie) => {
+                    var elemento = serie.NAME_FROM_PROCEDURE.split('-')[0];
+                    var campo = serie.NAME_FROM_PROCEDURE.split('-')[1];
                   return {
                     name: serie.SERIE_NAME,
                     id: serie.ID,
-                    y: _.filter(vm.data, ['ELEMENTO', serie.NAME_FROM_PROCEDURE]).map((item) => item.VALOR1*1)[0]
+                    y: _.filter(vm.data, ['ELEMENTO', elemento]).map((item) => item[campo]*1)[0]
                   }
                 })
               }
@@ -113,19 +128,35 @@ var Controller = function ($scope) {
       }
 
       // If there is multiples Unids 
-      let multipleAxis = Object.keys(_.groupBy(vm.graphic.series, 'UNIDAD'));
+      let groupsYAxis = _.groupBy(vm.graphic.series, 'LABELY')
+      let multipleAxis = Object.keys(groupsYAxis);
+      
       if (multipleAxis.length > 1) {
-        vm.chartConfig.chart = {
-            zoomType: 'xy'
-        };
-
-        vm.chartConfig.xAxis.crosshair = true;
+       
+        // vm.chartConfig.xAxis.crosshair = true;
         vm.chartConfig.xAxis = [vm.chartConfig.xAxis];
 
-        vm.chartConfig.yAxis = multipleAxis.map((yaxis) => {
-          return {title: {text: yaxis}, opposite: true};
+        vm.chartConfig.yAxis = multipleAxis.map((yaxis, index) => {
+          return { title: {
+                      text: yaxis,
+                      style: {
+                          color: Highcharts.getOptions().colors[index]
+                      }
+                    },
+                    labels: {
+                        format: '{value} ' + groupsYAxis[yaxis][0].SUFFIX ,
+                        style: {
+                            color: Highcharts.getOptions().colors[index]
+                        }
+                    },
+                    opposite: true
+                  };
         })
         vm.chartConfig.yAxis[0].opposite = false;
+
+         vm.chartConfig.tooltip =  {
+            shared: true
+        }
 
         vm.chartConfig.series.forEach((serie) => {
           serie.yAxis = multipleAxis.indexOf(serie.unidad);
@@ -135,7 +166,7 @@ var Controller = function ($scope) {
       }
       
 
-      console.log(vm.chartConfig);
+      // console.log(vm.chartConfig);
       vm.isLoading = false;
     }
 

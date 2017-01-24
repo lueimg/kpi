@@ -55,15 +55,15 @@ var Controller = function (GeneradorSvc, $scope) {
     vm.addTable = (doc, rows) => {
         doc.autoTable(vm.columns, rows, {startY: vm.yPosition, pageBreak: 'avoid'});
         vm.yPosition = doc.autoTable.previous.finalY + 15;
-        // vm.yPosition = 20;
-        // doc.addPage();
+        vm.yPosition = 20;
+        doc.addPage();
     };
 
     vm.addGraphic = (doc, graphiId) => {
         var index = angular.element("#ID-" + graphiId).attr('data-highcharts-chart')
         var imageData = Highcharts.charts[index].createCanvas();
         doc.addImage(imageData, 'JPEG', 23, vm.yPosition, 150, 100);
-        vm.yPosition+=(80 + 10);
+        vm.yPosition+=(100 + 10);
     }
 
     vm.addContentSection = (doc, contents) => {

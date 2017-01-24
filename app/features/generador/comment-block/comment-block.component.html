@@ -23,8 +23,14 @@
     <div ng-repeat="comment in $ctrl.list" class="comment-item">
         <div class="post">
             <div class="user-block">
+                 <a type="button"
+                    class="btn comment-edit"
+                    title="Editar"
+                    ng-click="$ctrl.editComment(comment)">
+                        <i class="fa fa-edit"></i> </a>
                 <span class="description pull-right">{{comment.CREATED_AT}}</span>
-                <span class="username">  <a>{{comment.USUARIO}}</a> </span>
+                <span class="username">  <a>{{comment.USUARIO}}</a> </span> 
+                
                 
             </div>
             <p>

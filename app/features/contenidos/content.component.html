@@ -69,10 +69,12 @@
                             <input type="text" class="form-control" id="procedure" placeholder="Ingrese el store procedure"
                                    required
                                    maxlength="500"
-                                  
+                                   ng-disabled="$ctrl.content.graphs.length > 0"
                                    ng-model="$ctrl.content.PROCEDURE"
                                    data-auto-focus>
+                            * Para Editar el procedure no debe tener graficos agregados <button ng-show="$ctrl.content.graphs.length > 0" ng-click="$ctrl.content.graphs = []" class="btn btn-xs btn-danger">Borrar gráficos</button>
                         </div>
+
                         <div class="col-sm-6 col-sm-offset-2">
                             <br>
                             <p>
@@ -86,10 +88,9 @@
                                required-field>Antiguedad: </label>
                         
                         <div class="col-sm-6"> 
-                            <input type="text" class="form-control" id="rango-semana" placeholder="Numero de semanas"
+                            <input type="number" class="form-control" id="rango-semana" placeholder="Numero de semanas"
                                    required
                                    maxlength="500"
-                                  
                                    ng-model="$ctrl.content.WEEKSRANGE"
                                    data-auto-focus>
                         </div> 

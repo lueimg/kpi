@@ -50,7 +50,7 @@ class ReportsModel extends Model
         $query = $qFullSelect;
         if (!empty($data->limit) && $data->limit) $query = "$qPaginationPart1 $qFullSelect $qPaginationPart2";
 
-
+        // var_dump($query); die();
         $list = $this->getList($query);
         $count = $this->getList("$qCount $qFrom $qJoin1  $qWhere $qOrder");
 

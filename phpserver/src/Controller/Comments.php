@@ -35,6 +35,12 @@ class Comments extends Controller
         return $response->withJson($results, $results['status']);
     }
 
+     protected function putAction($request , $response)
+    {
+        $results = $this->model->update((object)$request->getParams());
+        return $response->withJson($results, $results['status']);
+    }
+
     protected function deleteAction($request, $response)
     {
         $ID = $this->getUrlSegment(1);
