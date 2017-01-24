@@ -18,20 +18,19 @@ function ReportesFormComponentCtrl($filter, $location, $routeParams, ReportesSvc
       
   vm.isDisabled = false;
   vm.reporte = new ReportesSvc();
-  vm.reporte.subreports = [];
+  vm.reporte.sub = [];
   if (id) {
     ReportesSvc.get({ID: id}, function (res) {
       vm.reporte = res.results;
-      vm.reporte.subreports = vm.reporte.subreports || [];
+      vm.reporte.sub = vm.reporte.sub || [];
     });
   } 
 
   vm.addSubReport = function () {
-    vm.reporte.subreports.push('');
+    vm.reporte.sub.push({NAME: ''});
   };
   vm.removeSubReport = function (index) {
- 
-    vm.reporte.subreports.splice(index, 1);
+    vm.reporte.sub.splice(index, 1);
   };
 
   vm.backToList = function () {

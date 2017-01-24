@@ -109,7 +109,7 @@ class CommentModel extends Model
     public function delete($data)
     {
         
-        $results = $this->execQuery("UPDATE $this->table SET STATUS = 0 where id = $data->ID");
+        $results = $this->execQuery("UPDATE $this->table SET STATUS = 0 where id = $data->id");
         if ($results['error'])  return $this->jsonResponse($results, 500);
 
          return $this->jsonResponse([ "code"=> '001', "message" => 'Elimmando correctamente' ], 200);

@@ -187,6 +187,10 @@ class ContentModel extends Model
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
+
+        $results = $this->execQuery("UPDATE  KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
+        if ($results['error'])  return $this->jsonResponse($results, 500);
+
         if (count($data->graphs))
         {   
             foreach($data->graphs as $graphic)
@@ -194,32 +198,62 @@ class ContentModel extends Model
                 $graph = (object)$graphic;
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
-                $query = "UPDATE $graphicsTable SET TITLE = '$graph->title', TYPE = '$graph->graphic_type', LABELY = '$graph->labely', SUFFIX = '$graph->suffix' WHERE ID = $graph->id";
-                // $query = "UPDATE $graphicsTable (ID, TITLE, CONTENT_ID, TYPE, LABELY, SUFFIX) 
-                //           VALUES ($seqGraphics.nextval, '$graph->title', $data->ID, '$graph->graphic_type', '$graph->labely', '$graph->suffix')";
 
-                $results = $this->execQuery($query);
-                if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                if (!empty($graph->ID)) {
+                    $query = "UPDATE $graphicsTable SET TITLE = '$graph->title', TYPE = '$graph->graphic_type', LABELY = '$graph->labely', SUFFIX = '$graph->suffix', STATUS = 1 WHERE ID = $graph->id";
+                    $results = $this->execQuery($query);
+                    if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                $graphicLabel = $graph->labely;
-                $graphicSuffix = $graph->suffix;
-                // Insert Series
-                if (count($graph->series))
-                {   
-                    foreach($graph->series as $serie)
-                    {
-                        $serieObj = (object)$serie;
-                        $seriesTable = $this->tables->series->name;
-                        $seqSeries = $this->tables->series->seq;
-                        $seqGraphic =  $this->tables->graphics->seq;
-                        $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
-                        $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
-                        $query= "UPDATE $seriesTable SET SUBGRAPHIC_TYPE =  '$serieObj->SUBGRAPHIC_TYPE',SERIE_NAME =  '$serieObj->SERIE_NAME', NAME_FROM_PROCEDURE= '$serieObj->NAME_FROM_PROCEDURE', LABELY = '$serieUnidad', SUFFIX= '$serieSuffix' WHERE ID = $serieObj->ID";
+                    $graphicLabel = $graph->labely;
+                    $graphicSuffix = $graph->suffix;
+                    // Insert Series
+                    if (count($graph->series))
+                    {   
+                        foreach($graph->series as $serie)
+                        {
+                            $serieObj = (object)$serie;
+                            $seriesTable = $this->tables->series->name;
+                            $seqSeries = $this->tables->series->seq;
+                            $seqGraphic =  $this->tables->graphics->seq;
+                            $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
+                            $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
+                            $query= "UPDATE $seriesTable SET SUBGRAPHIC_TYPE =  '$serieObj->SUBGRAPHIC_TYPE',SERIE_NAME =  '$serieObj->SERIE_NAME', NAME_FROM_PROCEDURE= '$serieObj->NAME_FROM_PROCEDURE', LABELY = '$serieUnidad', SUFFIX= '$serieSuffix' WHERE ID = $serieObj->ID";
 
-                        // $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
-                        //             VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
-                        $results = $this->execQuery($query);
-                        if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                            // $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
+                            //             VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
+                            $results = $this->execQuery($query);
+                            if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                        }
+                    }
+
+                } else {
+                    // Create new graphic
+                   
+                    
+                    $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, LABELY, TITLE, SUFFIX) 
+                    VALUES ($seqGraphics.nextval, $data->ID, '$graph->graphic_type', '$graph->labely', '$graph->title', '$graph->suffix')";
+
+                    $results = $this->execQuery($query);
+                    if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+
+                    $graphicLabel = $graph->labely;
+                    $graphicSuffix = $graph->suffix;
+                    // Insert Series
+                    if (count($graph->series))
+                    {   
+                        foreach($graph->series as $serie)
+                        {
+                            $serieObj = (object)$serie;
+                            $seriesTable = $this->tables->series->name;
+                            $seqSeries = $this->tables->series->seq;
+                            $seqGraphic =  $this->tables->graphics->seq;
+                            $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
+                            $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
+                            $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
+                                        VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
+                            $results = $this->execQuery($query);
+                            if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                        }
                     }
                 }
             }

@@ -40,6 +40,16 @@ var Controller = function (CommentSvc) {
         }
         
     }
+
+    vm.deleteComment = () => {
+        if (vm.comment.id) {
+            CommentSvc.delete(vm.comment, (reponse) => {
+                vm.comment = { user: '', comment: '' };
+                vm.getCommentList();
+            });
+        }
+    }
+
     vm.editComment = (comment) => {
         vm.comment.id = comment.ID;
         vm.comment.user = comment.USUARIO;

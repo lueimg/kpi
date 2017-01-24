@@ -37,9 +37,9 @@
                                class="col-sm-2 control-label">Sub Reportes: </label>
                         <div class="col-sm-10">
                             <div class="row ">
-                                <div class="col-sm-12 subreports-item" ng-repeat="item in $ctrl.reporte.subreports track by $index">
+                                <div class="col-sm-12 subreports-item" ng-repeat="item in $ctrl.reporte.sub track by $index">
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control" required ng-model="$ctrl.reporte.subreports[$index]" placeholder="sub reporte ...">
+                                        <input type="text" class="form-control" required ng-model="item.NAME" placeholder="SUB reporte ...">
                                     </div>
                                     <div class="col-sm-6"> 
                                         <a  ng-click="$ctrl.removeSubReport($index)"> <i class="fa fa-trash"></i></a>
@@ -61,4 +61,3 @@
         </div>
     </div>
 </div>
-
