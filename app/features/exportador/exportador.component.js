@@ -17,8 +17,10 @@ var Controller = function (GeneradorSvc, $scope) {
     vm.getWeeksList();
 
     vm.exportContent = () => {
+
         vm.graphics = [];
         vm.disallowExport = true;
+        vm.isLoading = true;
         GeneradorSvc.getAllContent(vm.filtros, (response) => {
             vm.graphics = response.results.graphics;
             vm.reports = response.results.list;
@@ -102,6 +104,7 @@ var Controller = function (GeneradorSvc, $scope) {
         
         doc.save(`${vm.filtros.year}.${vm.filtros.week}.${time}.pdf`);
         vm.disallowExport = false;
+        vm.isLoading = false;
         $scope.$apply();
     };
 

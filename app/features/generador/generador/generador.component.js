@@ -35,6 +35,9 @@ var GeneradorCtrl = function (ReportesSvc, GeneradorSvc) {
             vm.graphics = response.results.graphics;
             vm.data = response.results.data;
             vm.isLoading = false;
+
+            // Si no hay graficos , deberiamos imprmir la tabla
+            
         });
     };
 

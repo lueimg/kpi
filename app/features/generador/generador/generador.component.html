@@ -23,13 +23,13 @@
           <div class="col-sm-10 box-tools pull-right">
             <label for="descripcion" class="col-sm-1 control-label">Año: </label>
             <div class="col-sm-4">
-                <select class="form-control" ng-change="$ctrl.generateContent()"
+                <select class="form-control" ng-change="$ctrl.generateGraphicsFromContent()"
                         ng-model="$ctrl.filtros.year" ng-options="item for item in $ctrl.yearList">
                 </select>
             </div>
             <label for="descripcion" class="col-sm-1 control-label">Semana: </label>
             <div class="col-sm-4">
-                <select class="form-control" ng-change="$ctrl.generateContent()"
+                <select class="form-control" ng-change="$ctrl.generateGraphicsFromContent()"
                         ng-model="$ctrl.filtros.week" 
                         ng-options="item.id as item.text for item in $ctrl.weekList">
                 </select>
@@ -54,11 +54,25 @@
           <div class="col-sm-12" ng-if="$ctrl.filtros.content_name == ''">
            <div class="alert alert-info alert-dismissible">
                 * Seleccione un contenido para mostrar graficos por semana y año.
-              </div>
+            </div>
           </div>
-          <div ng-repeat="graphic in $ctrl.graphics">
+          <div class="col-sm-12"  ng-show="$ctrl.isLoading">
+            <div class="alert alert-info alert-dismissible">
+                * Generando graficos ... 
+            </div>
+          </div>
+
+           <div class="col-sm-12"  ng-show="$ctrl.graphics.length < 1 && $ctrl.filtros.content_id && !$ctrl.isLoading">
+            <div class="alert alert-warning alert-dismissible">
+                * No se encontraron gráficos que mostrar
+            </div>
+          </div>
+
+          <div ng-if="!$ctrl.isLoading" ng-repeat="graphic in $ctrl.graphics">
               <graphic-component graphic="graphic" data="$ctrl.data"></graphic-component>
           </div>
+
+          
 
         </div>
         <!-- /.box-body -->

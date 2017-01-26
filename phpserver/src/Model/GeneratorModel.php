@@ -82,6 +82,12 @@ class GeneratorModel extends Model
         $query = "BEGIN $procedure($semana, $anio, $antiguedad ); END;";
         $this->execQuery($query);
 
+        // Validad que no hay graficos
+        // Consultar la otra tabla temporal
+        // Deveolver todo el htmlentities
+        
+
+
        // Get data from Temporal
         $seriesDataRaw = $this->getListFromTemporalTableGraphic();
         

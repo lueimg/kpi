@@ -20,6 +20,17 @@ var GraphicCtrl = function () {
           vm.subGraphicDisabled = false;
       }
     }
+    // vm.yAxises = [{}];
+    vm.addYAxis = () => {
+       vm.graphic.yAxises.push({});
+    }
+
+    vm.removeYAxis = (index) => {
+        vm.graphic.yAxises.splice(index, 1);
+    }
+
+
+
 }
 
 angular.module('doc.features').component('graphicFieldComponent', {

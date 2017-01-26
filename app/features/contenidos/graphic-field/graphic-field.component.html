@@ -22,16 +22,26 @@
                     <!--<option value="table">Tabla</option>-->
                 </select>
             </div>
-        </div>
-        
-         <div class="col-sm-12">
-            <label for="descripcion" class="col-sm-2 control-label" required-field>Label Axis Y: </label>
             <div class="col-sm-3">
-                <input class="form-control" type="text" ng-model="$ctrl.graphic.labely">
+                <button class="btn btn-sm btn-primary" ng-click="$ctrl.addYAxis()">Agregar Axis Y</button>
             </div>
-            <label for="descripcion" class="col-sm-2 control-label" required-field>Sufijo </label>
+        </div>  
+
+<hr>        
+         <div class="col-sm-12" ng-repeat="yAxis in $ctrl.graphic.yAxises">
+            <label for="descripcion" class="col-sm-2 control-label" required-field>Titulo Axis Y: </label>
             <div class="col-sm-3">
-                <input class="form-control" type="text" ng-model="$ctrl.graphic.suffix">
+                <input class="form-control" type="text" ng-model="yAxis.TITLE" required>
+            </div>
+            <label for="descripcion" class="col-sm-1 control-label">Sufijo </label>
+            <div class="col-sm-2">
+                <input class="form-control" type="text" ng-model="yAxis.SUFFIX" required>
+            </div>
+             <div class="col-sm-2">
+                <input type="checkbox" ng-model="yAxis.OPPOSITE" ng-true-value="'1'" ng-false-value="'0'"> Opposite
+            </div>
+            <div class="col-sm-2"> 
+                <a  ng-click="$ctrl.removeYAxis($index)"> <i class="fa fa-trash"></i></a>
             </div>
          </div>
      </div>
@@ -52,8 +62,8 @@
             <th>ELEMENTO</th>
             <th>SERIE NOMBRE</th>
             <th>TIPO GRAFICO</th>
-            <th>Label Y Axis</th>
-            <th>Sufijo</th>
+            <th> Y Axis</th>
+           
             
         </tr>
         <tr ng-repeat="serie in $ctrl.graphic.series">
@@ -64,7 +74,7 @@
             </td>
             <td>
                 <select  class="form-control" name="serie-tipo" id="" 
-                        ng-model="serie.SUBGRAPHIC_TYPE" 
+                        ng-model="serie.SUBGRAPHIC_TYPE"  
                         ng-disabled="$ctrl.subGraphicDisabled">
                     <option value="line">Linea</option>
                     <option value="spline">Spline</option>
@@ -75,13 +85,20 @@
             </td>
            
             <td>
-                <input class="form-control" type="text" ng-model="serie.LABELY" placeholder="LABEL Y por Defecto">
+               <select  class="form-control" 
+                        ng-model="serie.YAXIS" 
+                        ng-disabled="$ctrl.subGraphicDisabled"
+                        >
+                    <option value="0">Default Axis Y</option>
+                    <option ng-repeat="item in $ctrl.graphic.yAxises" value="{{$index}}">{{item.TITLE}}</option>
+                </select>
             </td>
-            <td>
-                <input class="form-control" type="text" ng-model="serie.SUFFIX" placeholder="SUFIX POR DEFECTO">
-            </td>
+            
            
 
         </tr>
     </tbody>
 </table>
+<!--<pre>
+    {{$ctrl.graphic | json}}
+</pre>-->

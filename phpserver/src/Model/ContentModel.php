@@ -75,7 +75,7 @@ class ContentModel extends Model
         LEFT JOIN KPI_REPORTS REP ON REP.ID = CON.REPORT_ID 
         LEFT JOIN KPI_SUBREPORTS SUB ON SUB.ID = CON.SUBREPORT_ID
         LEFT JOIN (SELECT CONTENT_ID, LISTAGG(CONCAT(CONCAT(ID,'*'), NAME), '|') WITHIN GROUP (ORDER BY ID) FIELDS_DATA, COUNT(1) FIELDS_TOTAL FROM  KPI_CONTENTS_FIELDS WHERE STATUS = 1 GROUP BY CONTENT_ID) FIELDS ON FIELDS.CONTENT_ID = CON.ID
-        LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||TITLE||'*'||TYPE||'*'||LABELY||'*'||SUFFIX, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
+        LEFT JOIN (SELECT CONTENT_ID, COUNT(1) GRAPHICS_TOTAL, LISTAGG(ID||'*'||TITLE||'*'||TYPE, '|') WITHIN GROUP (ORDER BY ID) GRAPHICS_DATA FROM  KPI_GRAPHICS WHERE STATUS = 1 GROUP BY CONTENT_ID) GRA ON GRA.CONTENT_ID = CON.ID ";
         
         $qWhere = "  WHERE 1 = 1  AND CON.ID = $content_id";
         $orderColumn = 'ID';
@@ -86,17 +86,7 @@ class ContentModel extends Model
 
         $result->WEEKSRANGE = $result->WEEKSRANGE*1;
 
-        // queries
-        $result->FIELDS = [];
-        if ($result->FIELDS_TOTAL > 0) {
-           
-            $fields = explode("|", $result->FIELDS_DATA);
-            foreach($fields as $field) {
-                $data = explode("*", $field);
-                $result->FIELDS[] = $data[1];
-                // $query_indexes[] = $data[0];
-            }
-        }
+        
 
         // graphics
         $result->graphs = [];
@@ -106,12 +96,13 @@ class ContentModel extends Model
                 $data = explode("*", $row);
                 $series = $this->getList("SELECT * FROM KPI_SERIES WHERE GRAPHIC_ID = $data[0] AND STATUS  = 1");
                 
+                $yAxises =  $this->getList("SELECT * FROM KPI_YAXIS WHERE GRAPHIC_ID = $data[0] AND STATUS  = 1 ORDER BY ID");
+
                 $result->graphs[] = array(
                     "id" => $data[0],
                     "title" => $data[1],
                     "graphic_type"=>$data[2], 
-                    "labely"=>$data[3], 
-                    "suffix"=>$data[4], 
+                    "yAxises" => $yAxises,
                     "series"=> $series);
             }
         }
@@ -140,30 +131,39 @@ class ContentModel extends Model
             foreach($data->graphs as $graphic)
             {
                 $graph = (object)$graphic;
+
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
                 
-                $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, LABELY, TITLE, SUFFIX) 
-                VALUES ($seqGraphics.nextval, $newContentID, '$graph->graphic_type', '$graph->labely', '$graph->title', '$graph->suffix')";
-
+                $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, TITLE)  VALUES ($seqGraphics.nextval, $newContentID, '$graph->graphic_type', '$graph->title')";
                 $results = $this->execQuery($query);
                 if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                 $graphicLabel = $graph->labely;
-                 $graphicSuffix = $graph->suffix;
+
+                if (count($graph->yAxises) > 0) {
+                    $order = -1;
+                    foreach($graph->yAxises as $yAxis) {
+                        $data = (object)$yAxis;
+                        $opposite = (!empty($data->OPPOSITE) && $data->OPPOSITE) ? 1 : 0;
+                        $order++;
+                        $query = "INSERT INTO KPI_YAXIS (ID, GRAPHIC_ID, TITLE, SUFFIX, OPPOSITE, ORDEN)  VALUES (kpi_yaxis_seq.nextval, $seqGraphics.currval, '$data->TITLE', '$data->SUFFIX', $opposite, $order)";
+                        $results = $this->execQuery($query);
+                        if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                    }
+                }
+               
                 // Insert Series
                 if (count($graph->series))
                 {   
                     foreach($graph->series as $serie)
                     {
-                        $serieObj = (object)$serie;
+                        $data = (object)$serie;
                         $seriesTable = $this->tables->series->name;
                         $seqSeries = $this->tables->series->seq;
                         $seqGraphic =  $this->tables->graphics->seq;
-                        $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
-                        $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
-                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
-                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
+                        
+                        $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, YAXIS) 
+                                    VALUES ($seqSeries.nextval, $seqGraphic.currval, '$data->SUBGRAPHIC_TYPE', '$data->SERIE_NAME', '$data->NAME_FROM_PROCEDURE', $data->YAXIS)";
                         $results = $this->execQuery($query);
                         if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
                     }
@@ -182,16 +182,24 @@ class ContentModel extends Model
         $subReportField = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ' , SUBREPORT_ID = ' : '';
         $subReportIdValue = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  '' . $data->SUBREPORT_ID : '';
 
-        $query = "UPDATE $table SET  NAME = '$data->NAME', REPORT_ID = $data->REPORT_ID ,  WEEKSRANGE = $data->WEEKSRANGE ,  PROCEDURE = '$data->PROCEDURE'  $subReportField $subReportIdValue  WHERE ID = $data->ID";
+        $query = "UPDATE $table SET  
+            NAME = '$data->NAME', 
+            REPORT_ID = $data->REPORT_ID ,  
+            WEEKSRANGE = $data->WEEKSRANGE ,  
+            PROCEDURE = '$data->PROCEDURE'  
+            $subReportField $subReportIdValue  
+            WHERE ID = $data->ID";
+
+        $contentId = $data->ID;
 
         $results = $this->execQuery($query);
         if ($results['error']) return $this->jsonResponse($results, 500);
 
 
-        $results = $this->execQuery("UPDATE  KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
+        $results = $this->execQuery("UPDATE  KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $contentId");
         if ($results['error'])  return $this->jsonResponse($results, 500);
 
-        if (count($data->graphs))
+        if (count($data->graphs) > 0)
         {   
             foreach($data->graphs as $graphic)
             {
@@ -199,13 +207,41 @@ class ContentModel extends Model
                 $graphicsTable = $this->tables->graphics->name;
                 $seqGraphics = $this->tables->graphics->seq;
 
-                if (!empty($graph->ID)) {
-                    $query = "UPDATE $graphicsTable SET TITLE = '$graph->title', TYPE = '$graph->graphic_type', LABELY = '$graph->labely', SUFFIX = '$graph->suffix', STATUS = 1 WHERE ID = $graph->id";
+                if (!empty($graph->id)) {
+                    $query = "UPDATE $graphicsTable SET 
+                        TITLE = '$graph->title', 
+                        TYPE = '$graph->graphic_type', 
+                        STATUS = 1 WHERE ID = $graph->id";
                     $results = $this->execQuery($query);
                     if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                    $graphicLabel = $graph->labely;
-                    $graphicSuffix = $graph->suffix;
+
+                    $results = $this->execQuery("UPDATE  KPI_YAXIS SET STATUS = 0 where GRAPHIC_ID = $graph->id");
+                    if ($results['error'])  return $this->jsonResponse($results, 500);
+
+                    if(count($graph->yAxises)> 0) {
+                        $order = -1;
+                        foreach($graph->yAxises as $yAxis) {
+                            $order++;
+                            $data = (object)$yAxis;
+                            if (!empty($data->ID)) {
+                                // update
+                                $opposite = (!empty($data->OPPOSITE) && $data->OPPOSITE) ? 1 : 0;
+                                $query = "UPDATE  KPI_YAXIS SET  TITLE =  '$data->TITLE', SUFFIX = '$data->SUFFIX', OPPOSITE = $opposite, ORDEN = $order , STATUS = 1 WHERE ID = $data->ID";
+                                $results = $this->execQuery($query);
+                                if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+
+                            } else {
+                                // insert
+                                $opposite = (!empty($data->OPPOSITE) && $data->OPPOSITE) ? 1 : 0;
+                                $query = "INSERT INTO KPI_YAXIS (ID, GRAPHIC_ID, TITLE, SUFFIX, OPPOSITE, ORDEN)  VALUES (kpi_yaxis_seq.nextval, $graph->id, '$data->TITLE', '$data->SUFFIX', $opposite, $order)";
+                                $results = $this->execQuery($query);
+                                if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                            }
+
+                        }
+                    }
+                   
                     // Insert Series
                     if (count($graph->series))
                     {   
@@ -215,9 +251,13 @@ class ContentModel extends Model
                             $seriesTable = $this->tables->series->name;
                             $seqSeries = $this->tables->series->seq;
                             $seqGraphic =  $this->tables->graphics->seq;
-                            $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
-                            $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
-                            $query= "UPDATE $seriesTable SET SUBGRAPHIC_TYPE =  '$serieObj->SUBGRAPHIC_TYPE',SERIE_NAME =  '$serieObj->SERIE_NAME', NAME_FROM_PROCEDURE= '$serieObj->NAME_FROM_PROCEDURE', LABELY = '$serieUnidad', SUFFIX= '$serieSuffix' WHERE ID = $serieObj->ID";
+                            $yaxis = $serieObj->YAXIS ?  $serieObj->YAXIS : 0;
+                            $query= "UPDATE $seriesTable SET 
+                                SUBGRAPHIC_TYPE =  '$serieObj->SUBGRAPHIC_TYPE',
+                                SERIE_NAME =  '$serieObj->SERIE_NAME', 
+                                NAME_FROM_PROCEDURE= '$serieObj->NAME_FROM_PROCEDURE', 
+                                YAXIS= '$yaxis'
+                                WHERE ID = $serieObj->ID";
 
                             // $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
                             //             VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
@@ -228,39 +268,42 @@ class ContentModel extends Model
 
                 } else {
                     // Create new graphic
-                   
-                    
-                    $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, LABELY, TITLE, SUFFIX) 
-                    VALUES ($seqGraphics.nextval, $data->ID, '$graph->graphic_type', '$graph->labely', '$graph->title', '$graph->suffix')";
-
+                    $query = "INSERT INTO $graphicsTable (ID, CONTENT_ID, TYPE, TITLE)  VALUES ($seqGraphics.nextval, $contentId, '$graph->graphic_type', '$graph->title')";
                     $results = $this->execQuery($query);
                     if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
 
-                    $graphicLabel = $graph->labely;
-                    $graphicSuffix = $graph->suffix;
+
+                    if (count($graph->yAxises) > 0) {
+                        $order = -1;
+                        foreach($graph->yAxises as $yAxis) {
+                            $data = (object)$yAxis;
+                            $opposite = (!empty($data->OPPOSITE) && $data->OPPOSITE) ? 1 : 0;
+                            $order++;
+                            $query = "INSERT INTO KPI_YAXIS (ID, GRAPHIC_ID, TITLE, SUFFIX, OPPOSITE, ORDEN)  VALUES (kpi_yaxis_seq.nextval, $seqGraphics.currval, '$data->TITLE', '$data->SUFFIX', $opposite, $order)";
+                            $results = $this->execQuery($query);
+                            if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
+                        }
+                    }
+                
                     // Insert Series
                     if (count($graph->series))
                     {   
                         foreach($graph->series as $serie)
                         {
-                            $serieObj = (object)$serie;
+                            $data = (object)$serie;
                             $seriesTable = $this->tables->series->name;
                             $seqSeries = $this->tables->series->seq;
                             $seqGraphic =  $this->tables->graphics->seq;
-                            $serieUnidad = !empty($serieObj->LABELY) ? $serieObj->LABELY :   $graphicLabel;
-                            $serieSuffix = !empty($serieObj->SUFFIX) ? $serieObj->SUFFIX :   $graphicSuffix;
-                            $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, LABELY, SUFFIX) 
-                                        VALUES ($seqSeries.nextval, $seqGraphic.currval, '$serieObj->SUBGRAPHIC_TYPE', '$serieObj->SERIE_NAME', '$serieObj->NAME_FROM_PROCEDURE', '$serieUnidad', '$serieSuffix')";
+                            
+                            $query = "INSERT INTO $seriesTable (ID, GRAPHIC_ID, SUBGRAPHIC_TYPE, SERIE_NAME, NAME_FROM_PROCEDURE, YAXIS) 
+                                        VALUES ($seqSeries.nextval, $seqGraphic.currval, '$data->SUBGRAPHIC_TYPE', '$data->SERIE_NAME', '$data->NAME_FROM_PROCEDURE', $data->YAXIS)";
                             $results = $this->execQuery($query);
                             if (is_array($results) && !empty($results['error']))  return $this->jsonResponse($results, 500);
                         }
                     }
                 }
             }
-        } else {
-            $results = $this->execQuery("UPDATE KPI_GRAPHICS SET STATUS = 0 where CONTENT_ID = $data->ID");
-            if ($results['error'])  return $this->jsonResponse($results, 500);
-        }
+        } 
         
         return $this->jsonResponse([ "code"=> '001', "message" => 'ok' ], 201);
     }

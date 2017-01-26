@@ -58,30 +58,35 @@ var Controller = function ($scope) {
             categories: _.map(vm.data, (item) => item.REFFECHA)
           };
 
-          vm.chartConfig.yAxis = {
-            title: {
-                text: vm.graphic.labely
+          vm.chartConfig.yAxis = vm.graphic.yAxises.map((yaxis, index) => {
+            return {
+              title: {
+                text: yaxis.TITLE
             },
             labels: {
-                format: '{value} ' + vm.graphic.suffix ,
+                format: '{value} ' + yaxis.SUFFIX ,
                 style: {
-                    color: Highcharts.getOptions().colors[0]
+                    color: Highcharts.getOptions().colors[index]
                 }
             },
+            opposite: yaxis.OPPOSITE > 0
+            }
+          });
 
-          };
           // Series 
           vm.chartConfig.series = vm.graphic.series.map((serie) => {
             var elemento = serie.NAME_FROM_PROCEDURE.split('-')[0];
             var campo = serie.NAME_FROM_PROCEDURE.split('-')[1];
+            var suffix = vm.graphic.yAxises.find((yaxis) => yaxis.ORDEN == serie.YAXIS).SUFFIX
             return {
               name: serie.SERIE_NAME,
               unidad: serie.LABELY,
               suffix: serie.SUFFIX,
               id: serie.ID,
               type: serie.SUBGRAPHIC_TYPE,
+              yAxis: +serie.YAXIS,
               tooltip: {
-                  valueSuffix: ' ' + serie.SUFFIX
+                  valueSuffix: ' ' + suffix
               },
               data: _.filter(vm.data, ['ELEMENTO', elemento]).map((item) => item[campo]*1)
             }
@@ -126,47 +131,6 @@ var Controller = function ($scope) {
           break;
 
       }
-
-      // If there is multiples Unids 
-      let groupsYAxis = _.groupBy(vm.graphic.series, 'LABELY')
-      let multipleAxis = Object.keys(groupsYAxis);
-      
-      if (multipleAxis.length > 1) {
-       
-        // vm.chartConfig.xAxis.crosshair = true;
-        vm.chartConfig.xAxis = [vm.chartConfig.xAxis];
-
-        vm.chartConfig.yAxis = multipleAxis.map((yaxis, index) => {
-          return { title: {
-                      text: yaxis,
-                      style: {
-                          color: Highcharts.getOptions().colors[index]
-                      }
-                    },
-                    labels: {
-                        format: '{value} ' + groupsYAxis[yaxis][0].SUFFIX ,
-                        style: {
-                            color: Highcharts.getOptions().colors[index]
-                        }
-                    },
-                    opposite: true
-                  };
-        })
-        vm.chartConfig.yAxis[0].opposite = false;
-
-         vm.chartConfig.tooltip =  {
-            shared: true
-        }
-
-        vm.chartConfig.series.forEach((serie) => {
-          serie.yAxis = multipleAxis.indexOf(serie.unidad);
-        })
-
-
-      }
-      
-
-      // console.log(vm.chartConfig);
       vm.isLoading = false;
     }
 

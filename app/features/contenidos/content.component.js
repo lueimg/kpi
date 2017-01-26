@@ -51,11 +51,17 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
         vm.SeriesAvailables = response.results.map((item) => {
           return {
             NAME_FROM_PROCEDURE: item,
-            SERIE_NAME: item
+            SERIE_NAME: item,
+            YAXIS: "0"
           }
         });
         
-        vm.content.graphs.push( { series: vm.SeriesAvailables  } );
+        vm.content.graphs.push( { 
+          yAxises: [{}], 
+          "graphic_type": "line",
+          series: vm.SeriesAvailables  
+        } );
+        
       }, (error) => {
         notification.error("Hubo un error con el Store procedure usado.")
         console.log(error);
