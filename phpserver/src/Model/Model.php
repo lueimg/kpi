@@ -11,6 +11,7 @@ abstract class Model
     protected $newId =  '';
     protected $currentId = '';
     protected $temporalTable = "KPI_TMP_REP_GRAFICO";
+    protected $tmpTableGraphic = "";
 
     /**
      * Constructor.

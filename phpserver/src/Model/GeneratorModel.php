@@ -86,14 +86,13 @@ class GeneratorModel extends Model
         // Consultar la otra tabla temporal
         // Deveolver todo el htmlentities
         
-
-
+        
        // Get data from Temporal
-        $seriesDataRaw = $this->getListFromTemporalTableGraphic();
+        $tmpTableGraphic = $this->getListFromTemporalTableGraphic();
         
         $data = [ 
             "graphics" => $content->graphs, 
-            "data"=> $seriesDataRaw
+            "data"=> $tmpTableGraphic
         ];
 
         return [

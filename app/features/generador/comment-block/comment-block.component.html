@@ -6,37 +6,33 @@
 
 <div class="col-sm-12" ng-if="$ctrl.key">
     <h4>{{$ctrl.title}}</h4>
-    <button class="btn btn-primary btn-block margin-bottom" style="max-width: 300px;"
-            ng-click="$ctrl.showCommentForm()">Comentar</button>
+    <button class="btn btn-primary btn-block margin-bottom" 
+            style="max-width: 300px;"
+            ng-click="$ctrl.showCommentForm()">Agregar Comentario</button>
 </div>
-<!--
-<ul class="list-inline">
-    <li class="pull-right">
-        <a class="link-black text-sm"><i class="fa fa-comments-o margin-r-5"></i> 
-        Comments (5)</a>
-    </li>
-</ul> -->
+
 <div class="col-sm-12 comment-group " ng-if="$ctrl.key">
     <div ng-if="$ctrl.list.length < 1">
         * Aun no hay comentarios registrados.
     </div>
     <div ng-repeat="comment in $ctrl.list" class="comment-item">
-        <div class="post">
+        <a type="button"
+            class="btn comment-edit"
+            title="Editar"
+            ng-click="$ctrl.editComment(comment)">
+                <i class="fa fa-edit"></i> 
+        </a>
+
+        <div class="comment-post">
             <div class="user-block">
-                 <a type="button"
-                    class="btn comment-edit"
-                    title="Editar"
-                    ng-click="$ctrl.editComment(comment)">
-                        <i class="fa fa-edit"></i> </a>
-                <span class="description pull-right">{{comment.CREATED_AT}}</span>
-                <span class="username">  <a>{{comment.USUARIO}}</a> </span> 
                 
-                
+                <span class="username"> <a>{{comment.USUARIO}}</a> </span>
+                <span class="date ">{{comment.CREATED_AT}}</span> 
             </div>
-            <p>
+            <div class="comment-body">
             {{comment.COMENTARIO}}
-            </p>
-            <hr>
+            </div clas>
+            
         </div>
     </div>
 </div>

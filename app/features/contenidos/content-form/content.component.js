@@ -18,14 +18,15 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
       vm.SeriesAvailables = [];
       
     vm.backToList = () => $location.path('/contenidos');
+
     let reportPromise = ReportesSvc.query(response => {
        vm.reports = response.results.list;
     });
+
     vm.reportChange = () => {
       vm.content.SUBREPORT_ID = undefined;
       vm.subreports = [];
-      if (vm.content.REPORT_ID) 
-        vm.updateSubReportList(vm.content.REPORT_ID)
+      if (vm.content.REPORT_ID) vm.updateSubReportList(vm.content.REPORT_ID)
     };
 
     vm.updateSubReportList = (report_id) => {
@@ -41,29 +42,24 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
         return false;
       }
       // Verificar Procedure y series 
-      ContentSvc.verifySeries({
+      ContentSvc.verifyKpis({
         anio: 2017,
         semana: 1,
         antiguedad: vm.content.WEEKSRANGE || 10,
         procedure: vm.content.PROCEDURE || 'sp_test'
       }, (response) => {
-        notification.great(`Se encontraron ${response.results.length} series en el Store procedure`)
-        vm.SeriesAvailables = response.results.map((item) => {
+        notification.great(`Se encontraron ${response.results.length} KPIs en el Store procedure`)
+        vm.kpis = response.results.map((item, index) => {
           return {
             NAME_FROM_PROCEDURE: item,
-            SERIE_NAME: item,
-            YAXIS: "0"
+            TITLE: item,
+            YAXIS: (index + 1)
           }
         });
         
-        vm.content.graphs.push( { 
-          yAxises: [{}], 
-          "graphic_type": "line",
-          series: vm.SeriesAvailables  
-        } );
+        vm.content.graphs.push( {  kpis: vm.kpis    } );
         
-      }, (error) => {
-        notification.error("Hubo un error con el Store procedure usado.")
+      }, (error) => { notification.error("Hubo un error con el Store procedure usado.")
         console.log(error);
       });
       
@@ -87,8 +83,6 @@ var ContentCtrl = function (notification, ServicesConfig, ContentSvc, $routePara
         vm.isDisabled = false;
       };
     
-    
-
     $q.all([reportPromise.$promise]).then(function() {
       // console.log("ALL PROMISES RESOLVED");
       if (id) {

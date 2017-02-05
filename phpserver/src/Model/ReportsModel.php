@@ -115,7 +115,7 @@ class ReportsModel extends Model
                 $seq = $this->tables->subreports->seq;
                 $query = "INSERT INTO $table (ID, NAME, REPORT_ID) VALUES ($seq.nextval, '$subreport->NAME', $lastId)";
                 $results = $this->execQuery($query);
-                var_dump($query); die();
+                
                 if ($results['error'])  return $this->jsonResponse($response, 500);
             }
         }

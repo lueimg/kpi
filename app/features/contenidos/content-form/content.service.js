@@ -10,10 +10,10 @@ angular
         update: {
           method: 'PUT'
         },
-        verifySeries: {
+        verifyKpis: {
           isArray: false,
           method: 'POST',
-          url: ServicesConfig.url + '/Content/verifySeries'
+          url: ServicesConfig.url + '/Content/verifyKpis'
         }
 
       });

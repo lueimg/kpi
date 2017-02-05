@@ -172,7 +172,7 @@ $required-marker-color: #b94a48;
 }
 
 .comment-item {
-  .username, .description {
+  .username, .date {
     margin-left: 0;
   }
 }
@@ -197,5 +197,45 @@ $required-marker-color: #b94a48;
 }
 
 .comment-edit {
-  float: left;
+    display: inline-block;
+    vertical-align: top;
+    padding: 0;
+    position: relative;
+    top: 5px;
+    left: 13px;
 }
+.comment-post {
+  display: inline-block;
+  margin: 5px 5px 5px 20px;
+  .user-block {
+    display: inline-block;
+    
+    span {
+      display: inline-block;
+    }
+    .date {
+      color: #ccc;
+      font-size: 12px;
+    }
+    .username {
+        min-width: 72px;
+    }
+  }
+  .comment-body {
+   display: list-item;
+    margin: 5px 5px 5px 15px;
+
+  }
+}
+.comment-long-block {
+  
+}
+.comment-item {
+      border: 1px solid #ccc;
+      box-shadow: 1px 1px 1px #CCc;
+      margin: 5px;
+      background: #fdfdfd;
+      &:hover {
+            background: #e8e8e8;
+      }
+  }

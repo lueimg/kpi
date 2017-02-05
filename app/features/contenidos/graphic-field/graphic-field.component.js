@@ -11,16 +11,14 @@ var GraphicCtrl = function () {
     vm.updateSubGraphicType = () => {
       switch(vm.graphic.graphic_type) {
         case 'pie':
-          vm.graphic.series.forEach((serie) => {
-            serie.SUBGRAPHIC_TYPE = '';
-          });
-           vm.subGraphicDisabled = true;
+          vm.graphic.series.forEach((serie) => serie.SUBGRAPHIC_TYPE = '');
+          vm.subGraphicDisabled = true;
+          vm.graphic.yAxises = [];
           break;
         default:
           vm.subGraphicDisabled = false;
       }
     }
-    // vm.yAxises = [{}];
     vm.addYAxis = () => {
        vm.graphic.yAxises.push({});
     }

@@ -28,9 +28,12 @@ import "./theme/dist/js/app.js"
 import "./theme/bootstrap/css/bootstrap.min.css";
 // import "./theme/external/font-awesome.min.css";
 // import "./theme/external/ionicons.min.css";
-import "./theme/dist/css/AdminLTE.min.css";
+import "./theme/dist/css/AdminLTE.css";
 import "./theme/dist/css/skins/_all-skins.min.css";
 import "./core/main.css";
 import "./main.less";
 import "highcharts-ng";
 import "lodash";
+
+import './index-vendors/highcharts.css';
+// import './index-vendors/css/font-awesome.min.css'

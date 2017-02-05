@@ -30,79 +30,93 @@ var Controller = function (GeneradorSvc, $scope) {
         });
     };
 
-    vm.addReportTitle = (doc, text) => {
-        doc.setFontSize(13);
-        doc.text(20, vm.yPosition, text.toUpperCase());
+    vm.addReportTitle = (text) => {
+        
+        vm.doc.setFontSize(10);
+        vm.doc.text(150, vm.yPosition, `Año: ${vm.filtros.year} - Semana: ${vm.filtros.week}`);
+
+        vm.doc.setFontSize(13);
+        vm.doc.text(20, vm.yPosition,  '» ' + text.toUpperCase());
         vm.yPosition+=10;
     }
 
-    vm.addSubReportTitle = (doc, text) => {
-        doc.setFontSize(12);
-        doc.text(25, vm.yPosition, text);
+    vm.addSubReportTitle = (text) => {
+        vm.doc.setFontSize(12);
+        vm.doc.text(25, vm.yPosition, '» ' + text.toUpperCase());
         vm.yPosition+=10;
     }
 
-    vm.addContentTitle = (doc, text) => {
-        doc.setFontSize(11);
-        doc.text(30, vm.yPosition, text);
+    vm.addContentTitle = (text) => {
+        vm.doc.setFontSize(11);
+        vm.doc.text(30, vm.yPosition, '» ' + text.toUpperCase());
         vm.yPosition+=10;
     }
 
-    vm.addGraphicTitle = (doc, text) => {
-        doc.setFontSize(10);
-        doc.text(35, vm.yPosition, text.toUpperCase());
+    vm.addGraphicTitle = (text) => {
+        vm.doc.setFontSize(10);
+        vm.doc.text(35, vm.yPosition, text.toUpperCase());
         vm.yPosition+=10;
     }
 
-    vm.addTable = (doc, rows) => {
-        doc.autoTable(vm.columns, rows, {startY: vm.yPosition, pageBreak: 'avoid'});
-        vm.yPosition = doc.autoTable.previous.finalY + 15;
+    vm.addTable = (rows) => {
+        vm.doc.autoTable(vm.columns, rows, {startY: vm.yPosition, pageBreak: 'avoid'});
+        vm.yPosition = vm.doc.autoTable.previous.finalY + 15;
         vm.yPosition = 20;
-        doc.addPage();
+        vm.doc.addPage();
     };
 
-    vm.addGraphic = (doc, graphiId) => {
+    vm.addGraphic = (graphiId) => {
         var index = angular.element("#ID-" + graphiId).attr('data-highcharts-chart')
         var imageData = Highcharts.charts[index].createCanvas();
-        doc.addImage(imageData, 'JPEG', 23, vm.yPosition, 150, 100);
+        vm.doc.addImage(imageData, 'JPEG', 23, vm.yPosition, 150, 100);
         vm.yPosition+=(100 + 10);
     }
 
-    vm.addContentSection = (doc, contents) => {
+    vm.addContentSection = (contents, reportName, subReportName) => {
+        if (contents.length < 1) return false;
+
+        if (reportName) vm.addReportTitle(reportName);
+
+        if (subReportName) vm.addSubReportTitle(subReportName);
+
         contents.forEach((content) => {
-            vm.addContentTitle(doc, content.NAME);
+            vm.addContentTitle(content.NAME);
             content.graphics.forEach((graphic) => {
                 // vm.addGraphicTitle(doc, graphic.title);
                 // add graphic
-                vm.addGraphic(doc, graphic.id);
+                vm.addGraphic(graphic.id);
                 // add comments table
                 var idx = 1;
-                vm.addTable(doc, graphic.comments.map((comment) => [ idx++, comment.USUARIO, comment.COMENTARIO ] ));
+                vm.addTable(graphic.comments.map((comment) => [  `» ${comment.COMENTARIO}` ] ));
             })
         })
     }
 
+    vm.doc = {};
+
     vm.generatePdf = (reports) => {
-        var doc = new jsPDF();
+        vm.doc = new jsPDF();
         
         var chartHeight = 80;
         vm.yPosition = 20;
-        vm.columns = ["ID", "Usuario", "Comentario"];
+        vm.columns = ["Comentarios"];
         var rows = [];
         
         reports.forEach((report) => {
-            if (report.contents.length || report.subreports.length ) vm.addReportTitle(doc, report.name);
-            vm.addContentSection(doc, report.contents);
+            // if (report.contents.length || report.subreports.length ) 
+                // vm.addReportTitle(report.name);
+
+            vm.addContentSection(report.contents, report.name, undefined);
             report.subreports.forEach((subreport) => {
-                if (subreport.contents.length) vm.addSubReportTitle(doc, subreport.NAME);
-                vm.addContentSection(doc, subreport.contents);
+                // if (subreport.contents.length) vm.addSubReportTitle(subreport.NAME);
+                vm.addContentSection(subreport.contents, report.name, subreport.NAME);
             });
         })
         
         //save with name
         var time = new Date().getTime();
         
-        doc.save(`${vm.filtros.year}.${vm.filtros.week}.${time}.pdf`);
+        vm.doc.save(`${vm.filtros.year}.${vm.filtros.week}.${time}.pdf`);
         vm.disallowExport = false;
         vm.isLoading = false;
         $scope.$apply();

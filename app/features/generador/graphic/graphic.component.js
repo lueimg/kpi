@@ -4,93 +4,104 @@ var Controller = function ($scope) {
 
    
     vm.$onInit = () => {
+      // console.log("grapfic", vm.graphic);
       vm.xAxisData = [];
       vm.title = vm.graphic.title;
-      vm.graphic_type = vm.graphic.graphic_type;
+      vm.mainGrapicType = (vm.graphic.kpis[0].GRAPHIC_TYPE == 'pie')? 'pie' : 'line';
 
       // Data for graphic
       vm.chartConfig = {
-      chart: {
-        type: vm.graphic.graphic_type
-      },
-      title: {
-        text: vm.graphic.title
-      },
-      plotOptions: {
-        series: {
-          stacking: '',
-          cursor: 'pointer',
-              events: {
-                  click: function (event) {
-                    switch(vm.graphic.graphic_type) {
-                      case 'area':
-                      case 'line': 
-                        var pointValue = _.filter(this.points, ["state", "hover"])[0].y;
-                        var title = `${this.userOptions.name}: (${pointValue}) `;
-                        var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('').trim()}`;
-                        break;
-                      case 'pie':
-                       
-                        var point = _.filter(this.points, ["state", "hover"])[0];
-                        console.log(point);
-                        var title = `${point.name}: (${point.y}) `;
-                        var key = `${point.id}${vm.rangeOfWeekYear}`;
-                        break;
+        chart: {
+          type: vm.mainGrapicType
+        },
+        title: {
+          text: vm.graphic.title
+        },
+        plotOptions: {
+          series: {
+            stacking: '',
+            cursor: 'pointer',
+                events: {
+                    click: function (event) {
+                      switch(vm.mainGrapicType) {
+                        case 'area':
+                        case 'line': 
+                          var pointValue = _.filter(this.points, ["state", "hover"])[0].y;
+                          var title = `${this.userOptions.name}: (${pointValue}) `;
+                          var key = `${this.userOptions.id}${_.filter(this.points, ["state", "hover"])[0].category.split(' - ').join('').trim()}`;
+                          break;
+                        case 'pie':
+                        
+                          var point = _.filter(this.points, ["state", "hover"])[0];
+                          // console.log(point);
+                          var title = `${point.name}: (${point.y}) `;
+                          var key = `${point.id}${vm.rangeOfWeekYear}`;
+                          break;
 
+                      }
+                      // console.log(title);
+                      // console.log(key);
+                      vm.onPointClick(key, title);
+                      $scope.$apply()
                     }
-                    
-
-                    console.log(title);
-                    console.log(key);
-                    vm.onPointClick(key, title);
-                    $scope.$apply()
-                  }
-              }
-        }
-      },
-      series: [],
+                }
+          }
+        },
+        series: [],
       };
 
-      switch(vm.graphic.graphic_type) {
+      switch(vm.mainGrapicType) {
         case 'area':
         case 'line': 
+        //  console.log("data", vm.data);
           vm.chartConfig.xAxis = {
             categories: _.map(vm.data, (item) => item.REFFECHA)
           };
 
-          vm.chartConfig.yAxis = vm.graphic.yAxises.map((yaxis, index) => {
+          vm.chartConfig.yAxis = vm.graphic.kpis.map((kpi, index) => {
             return {
               title: {
-                text: yaxis.TITLE
+                text: kpi.TITLE
             },
             labels: {
-                format: '{value} ' + yaxis.SUFFIX ,
+                format: '{value} ' + kpi.SUFFIX ,
                 style: {
                     color: Highcharts.getOptions().colors[index]
                 }
             },
-            opposite: yaxis.OPPOSITE > 0
+            opposite: kpi.OPPOSITE > 0
             }
           });
 
-          // Series 
-          vm.chartConfig.series = vm.graphic.series.map((serie) => {
-            var elemento = serie.NAME_FROM_PROCEDURE.split('-')[0];
-            var campo = serie.NAME_FROM_PROCEDURE.split('-')[1];
-            var suffix = vm.graphic.yAxises.find((yaxis) => yaxis.ORDEN == serie.YAXIS).SUFFIX
-            return {
-              name: serie.SERIE_NAME,
-              unidad: serie.LABELY,
-              suffix: serie.SUFFIX,
-              id: serie.ID,
-              type: serie.SUBGRAPHIC_TYPE,
-              yAxis: +serie.YAXIS,
-              tooltip: {
-                  valueSuffix: ' ' + suffix
-              },
-              data: _.filter(vm.data, ['ELEMENTO', elemento]).map((item) => item[campo]*1)
-            }
+          // Series
+          var elementos = [];
+          var elementosData = {}; 
+          vm.data.forEach((item) => { 
+            if(!elementosData[item.ELEMENTO]) elementosData[item.ELEMENTO] = []; 
+
+            elementosData[item.ELEMENTO].push(item)  
           });
+          elementos = Object.keys(elementosData);
+
+          vm.graphic.kpis.forEach((kpi) => {
+            var campo = kpi.NAME_FROM_PROCEDURE;
+            // Get series
+            elementos.forEach((el) => {
+              vm.chartConfig.series.push({
+                name: el,
+                unidad: kpi.TITLE,
+                suffix: kpi.SUFFIX,
+                id: kpi.ID,
+                type: kpi.GRAPHIC_TYPE,
+                yAxis: (+kpi.YAXIS_GROUP -1),
+                tooltip: {
+                    valueSuffix: ' ' + kpi.SUFFIX
+                },
+                data: elementosData[el].map((item) => item[kpi.NAME_FROM_PROCEDURE]*1)
+              })
+            })
+          });
+          
           let xAxisPoints = vm.chartConfig.xAxis.categories.length = vm.chartConfig.series[0].data.length;
           break;
         case 'pie':
@@ -101,10 +112,7 @@ var Controller = function ($scope) {
               cursor: 'pointer',
               dataLabels: {
                     enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                    style: {
-                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                    }
+                    format: '{point.name}: {point.percentage:.1f} %'
                 }
             };
 
@@ -112,17 +120,17 @@ var Controller = function ($scope) {
                   pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
               };
             // Series 
+            // console.log('data', vm.data);
             vm.chartConfig.series = [
               {
                 name: vm.graphic.title,
                 colorByPoint: true,
-                data: vm.graphic.series.map((serie) => {
-                    var elemento = serie.NAME_FROM_PROCEDURE.split('-')[0];
-                    var campo = serie.NAME_FROM_PROCEDURE.split('-')[1];
+                data: vm.data.map((row) => {
+                    
                   return {
-                    name: serie.SERIE_NAME,
-                    id: serie.ID,
-                    y: _.filter(vm.data, ['ELEMENTO', elemento]).map((item) => item[campo]*1)[0]
+                    name: row.ELEMENTO,
+                    id: row.ORDEN,
+                    y: row.VALOR1*1
                   }
                 })
               }
@@ -132,7 +140,10 @@ var Controller = function ($scope) {
 
       }
       vm.isLoading = false;
-    }
+      // console.log('chart config',  vm.chartConfig);
+    } // fin init
+
+    
 
     vm.currentPoint = '';
     vm.onPointClick = (key, title) => {

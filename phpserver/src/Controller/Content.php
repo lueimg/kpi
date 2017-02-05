@@ -38,6 +38,9 @@ class Content extends Controller
             case 'verifySeries' : 
                 $results =  $this->model->verifySeries((object)$request->getParams());
                 break;
+             case 'verifyKpis' : 
+                $results =  $this->model->verifyKpis((object)$request->getParams());
+                break;
             default:
                  $results = $this->model->save((object)$request->getParams());
          }
