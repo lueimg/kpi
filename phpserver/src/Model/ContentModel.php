@@ -74,6 +74,7 @@ class ContentModel extends Model
                             CON.NAME, 
                             CON.PROCEDURE, 
                             CON.WEEKSRANGE, 
+                            CON.CONTENT_TYPE, 
                             CON.REPORT_ID, 
                             CON.SUBREPORT_ID , 
                             REP.NAME REPORT_NAME, 
@@ -125,7 +126,21 @@ class ContentModel extends Model
         $table = $this->table;
         $subReportField = !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ' , SUBREPORT_ID ' : '';
         $subReportIdValue =  !empty($data->SUBREPORT_ID) && $data->SUBREPORT_ID ?  ', ' . $data->SUBREPORT_ID : '';
-        $query = "INSERT INTO $table (ID, NAME, REPORT_ID, PROCEDURE, WEEKSRANGE  $subReportField)  VALUES ($this->newId, '$data->NAME', $data->REPORT_ID, '$data->PROCEDURE', '$data->WEEKSRANGE' $subReportIdValue)";
+        $query = "INSERT INTO $table (
+                             ID, 
+                             NAME, 
+                             REPORT_ID, 
+                             PROCEDURE,
+                             CONTENT_TYPE, 
+                             WEEKSRANGE  
+                             $subReportField)  
+                    VALUES ( $this->newId, 
+                            '$data->NAME', 
+                             $data->REPORT_ID, 
+                            '$data->PROCEDURE', 
+                            '$data->CONTENT_TYPE', 
+                            '$data->WEEKSRANGE' 
+                             $subReportIdValue)";
         $results = $this->execQuery($query);
 
         if ($results['error']) return $this->jsonResponse($results, 500);
@@ -197,6 +212,7 @@ class ContentModel extends Model
                             NAME = '$data->NAME', 
                             REPORT_ID = $data->REPORT_ID ,  
                             WEEKSRANGE = $data->WEEKSRANGE ,  
+                            CONTENT_TYPE = '$data->CONTENT_TYPE' ,  
                             PROCEDURE = '$data->PROCEDURE'  
                             $subReportField $subReportIdValue  
                             WHERE ID = $data->ID";

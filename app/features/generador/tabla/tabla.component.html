@@ -1,0 +1,8 @@
+<div class="tabla-graphic">
+    {{
+        $ctrl.data
+    }}
+</div>
+<div class="col-sm-12 comment-long-block" ng-if="!$ctrl.loading">
+    <comment-block-component key="$ctrl.charId" title="Comentarios"></comment-component> 
+</div>

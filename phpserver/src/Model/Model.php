@@ -10,6 +10,7 @@ abstract class Model
     protected $tables = [];
     protected $newId =  '';
     protected $currentId = '';
+    protected $temporalTableGraphic = "KPI_TMP_REP_GRAFICO";
     protected $temporalTable = "KPI_TMP_REP_GRAFICO";
     protected $tmpTableGraphic = "";
 
@@ -110,6 +111,10 @@ abstract class Model
     }
 
     public function getListFromTemporalTableGraphic() {
+        return  $this->getList("SELECT * FROM $this->temporalTableGraphic");
+    }
+
+    public function getListFromTemporalTable() {
         return  $this->getList("SELECT * FROM $this->temporalTable");
     }
 

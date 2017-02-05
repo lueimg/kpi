@@ -62,7 +62,7 @@
             </div>
           </div>
 
-           <div class="col-sm-12"  ng-show="$ctrl.graphics.length < 1 && $ctrl.filtros.content_id && !$ctrl.isLoading">
+           <div class="col-sm-12"  ng-show="$ctrl.graphics.length < 1 && $ctrl.filtros.content_id && !$ctrl.isLoading && $ctrl.type != 'tabla'">
             <div class="alert alert-warning alert-dismissible">
                 * No se encontraron gráficos que mostrar
             </div>
@@ -70,6 +70,10 @@
 
           <div ng-if="!$ctrl.isLoading" ng-repeat="graphic in $ctrl.graphics">
               <graphic-component graphic="graphic" data="$ctrl.data"></graphic-component>
+          </div>
+
+          <div ng-if="!$ctrl.isLoading && $ctrl.type == 'tabla'">
+              <tabla-component graphic="tabla" data="$ctrl.data" char-id="{{$ctrl.content_id}}"></graphic-component>
           </div>
 
           

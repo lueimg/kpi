@@ -97,8 +97,17 @@
                     </div>
                     
                 </div>
-
                 <div class="form-group">
+                    <label class="col-sm-2 control-label"for="descripcion" required-field>Tipo Grafico: </label>
+                    <div class="graphic-group col-sm-2">
+                        <select name="" id="" ng-model="$ctrl.content.CONTENT_TYPE" class="form-control">
+                            <option value="grafico">Grafico</option>
+                            
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="$ctrl.content.CONTENT_TYPE == 'grafico'">
                     <label class="col-sm-2 control-label"for="descripcion" required-field>Gráficos: </label>
                     <div class="graphic-group col-sm-8">
                         <graphic-field-component ng-repeat="graphic in $ctrl.content.graphs" 

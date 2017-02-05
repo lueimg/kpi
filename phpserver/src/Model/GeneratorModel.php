@@ -73,6 +73,7 @@ class GeneratorModel extends Model
     public function contentsById($data = []) {
         
         $content = $this->contentModel->fetchById($data->content_id)['results'];
+        
         // $this->debug($data);
         // Execute Procedure
         $anio = $data->year;
@@ -86,18 +87,20 @@ class GeneratorModel extends Model
         // Consultar la otra tabla temporal
         // Deveolver todo el htmlentities
         
-        
-       // Get data from Temporal
-        $tmpTableGraphic = $this->getListFromTemporalTableGraphic();
-        
-        $data = [ 
-            "graphics" => $content->graphs, 
-            "data"=> $tmpTableGraphic
-        ];
+        if ($content->CONTENT_TYPE == 'grafico') {
+            $tmpTable = $this->getListFromTemporalTableGraphic();
+        } else {
+            $tmpTable = $this->getListFromTemporalTable();
+        }
 
         return [
             "status" => 200,
-            "results" => $data
+            "results" => [
+                "content_id" => $data->content_id,
+                "type" => $content->CONTENT_TYPE,
+                "graphics" => $content->graphs, 
+                "data"=> $tmpTable
+            ]
         ];
 
     }

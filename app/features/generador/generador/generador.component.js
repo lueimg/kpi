@@ -34,6 +34,8 @@ var GeneradorCtrl = function (ReportesSvc, GeneradorSvc) {
         GeneradorSvc.get(vm.filtros, (response) => {
             vm.graphics = response.results.graphics;
             vm.data = response.results.data;
+            vm.type = response.results.type;
+            vm.content_id = response.results.content_id;
             vm.isLoading = false;
 
             // Si no hay graficos , deberiamos imprmir la tabla
