@@ -2,7 +2,7 @@
 angular
   .module('doc.features')
   .factory('ContentSvc', ['$resource','ServicesConfig', function ($resource, ServicesConfig) {
-    return  $resource(ServicesConfig.url + '/Content/:ID', {ID: '@ID'},
+    return  $resource(ServicesConfig.url + '/content/index.php?contentId=:ID', {ID: '@ID'},
       {
         query: {
           isArray: false
@@ -13,7 +13,7 @@ angular
         verifyKpis: {
           isArray: false,
           method: 'POST',
-          url: ServicesConfig.url + '/Content/verifyKpis'
+          url: ServicesConfig.url + '/Content/index.php?verifyKpis=1'
         }
 
       });

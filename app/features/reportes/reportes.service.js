@@ -2,7 +2,7 @@
 angular
   .module('doc.features')
   .factory('ReportesSvc', ['$resource','ServicesConfig', function ($resource, ServicesConfig) {
-    var Reportes = $resource(ServicesConfig.url + '/Reports/:ID', {ID: '@ID'},
+    var Reportes = $resource(ServicesConfig.url + '/reports/index.php?reportId=:ID', {ID: '@ID'},
       {
         query: {
           isArray: false

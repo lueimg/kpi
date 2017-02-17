@@ -5,6 +5,8 @@ var Controller = function (CommentSvc) {
         user: '',
         comment: ''
     };
+
+    vm.isViewMode = false;;
     
     vm.$onInit = () => {
          vm.getCommentList();

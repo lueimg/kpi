@@ -55,7 +55,7 @@ var Controller = function ($scope) {
         case 'line': 
         //  console.log("data", vm.data);
           vm.chartConfig.xAxis = {
-            categories: _.map(vm.data, (item) => item.REFFECHA)
+            categories: _.uniq(_.map(vm.data, (item) => item.REFFECHA))
           };
 
           vm.chartConfig.yAxis = vm.graphic.kpis.map((kpi, index) => {
@@ -75,20 +75,48 @@ var Controller = function ($scope) {
 
           // Series
           var elementos = [];
-          var elementosData = {}; 
-          vm.data.forEach((item) => { 
+          var elementosData = {};
+
+          // agrupar data
+          vm.data.forEach((item) => {
             if(!elementosData[item.ELEMENTO]) elementosData[item.ELEMENTO] = []; 
 
             elementosData[item.ELEMENTO].push(item)  
           });
+
+          
+
+          // series IDS
           elementos = Object.keys(elementosData);
+
+
+          // Completar Series con valores nulos
+          var totalColumns = vm.chartConfig.xAxis.categories.length;
+          var totalGroups = vm.graphic.kpis.length;
+
 
           vm.graphic.kpis.forEach((kpi) => {
             var campo = kpi.NAME_FROM_PROCEDURE;
             // Get series
             elementos.forEach((el) => {
+              var data = elementosData[el].map((item) => item[kpi.NAME_FROM_PROCEDURE]*1);
+              if (data.length != totalColumns) {
+                // LLenar columnas
+                data = [];
+                vm.chartConfig.xAxis.categories.forEach((xAxis) => {
+                  var value = elementosData[el].find(item => item.REFFECHA === xAxis);
+                  if (value) {
+                    data.push(+value[kpi.NAME_FROM_PROCEDURE]);
+                  } else {
+                    data.push(null);
+                  }
+                });
+              }
+              
+              var serieName = (totalGroups > 1) ? `${el}-${kpi.TITLE}`: el;
+              
               vm.chartConfig.series.push({
-                name: el,
+                name: serieName,
                 unidad: kpi.TITLE,
                 suffix: kpi.SUFFIX,
                 id: kpi.ID,
@@ -97,12 +125,12 @@ var Controller = function ($scope) {
                 tooltip: {
                     valueSuffix: ' ' + kpi.SUFFIX
                 },
-                data: elementosData[el].map((item) => item[kpi.NAME_FROM_PROCEDURE]*1)
-              })
-            })
+                data: data
+              });
+            });
           });
-          
-          let xAxisPoints = vm.chartConfig.xAxis.categories.length = vm.chartConfig.series[0].data.length;
+
+          //let xAxisPoints = vm.chartConfig.xAxis.categories.length = vm.chartConfig.series[0].data.length;
           break;
         case 'pie':
           vm.rangeOfWeekYearArray = vm.data[vm.data.length -1].REFFECHA.split('-')

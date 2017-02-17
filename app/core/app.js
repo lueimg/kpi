@@ -19,7 +19,7 @@
     ]);
   angular.module('doc.features', [])
   .constant("ServicesConfig", {
-    "url": "phpserver"
+    "url": "phpserverv1"
   });
   angular.module('documentarioApp')
   /**

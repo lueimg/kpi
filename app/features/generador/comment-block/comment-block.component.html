@@ -16,7 +16,8 @@
         * Aun no hay comentarios registrados.
     </div>
     <div ng-repeat="comment in $ctrl.list" class="comment-item">
-        <a type="button"
+        <a type="button" 
+            ng-if="!$ctrl.isViewMode"
             class="btn comment-edit"
             title="Editar"
             ng-click="$ctrl.editComment(comment)">
@@ -24,7 +25,7 @@
         </a>
 
         <div class="comment-post">
-            <div class="user-block">
+            <div class="user-block" ng-if="!$ctrl.isViewMode">
                 
                 <span class="username"> <a>{{comment.USUARIO}}</a> </span>
                 <span class="date ">{{comment.CREATED_AT}}</span> 

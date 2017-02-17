@@ -2,7 +2,7 @@
 angular
   .module('doc.features')
   .factory('GeneradorSvc', ['$resource','ServicesConfig', function ($resource, ServicesConfig) {
-    var Generador = $resource(ServicesConfig.url + '/Generator/:ID', {ID: '@ID'},
+    var Generador = $resource(ServicesConfig.url + '/generator/index.php?id=:ID', {ID: '@ID'},
       {
         query: {
           isArray: false
@@ -13,13 +13,13 @@ angular
         getReportsMenu : {
           isArray: false,
           method: 'GET',
-          url: ServicesConfig.url + '/Generator/reportsMenu'
+          url: ServicesConfig.url + '/generator/index.php?reportsMenu=reportsMenu'
 
         },
         getAllContent : {
           isArray: false,
           method: 'GET',
-          url: ServicesConfig.url + '/Generator/allContent'
+          url: ServicesConfig.url + '/generator/index.php?allContent=allContent'
 
         }
       });
