@@ -1,4 +1,9 @@
 # Install
-* `npm install && bower install`
-* `webpack`
-* `cd phpserver && composer install`
+* `npm run setup`
+
+# Para hacer cambios correr webpack para que genere los archivos en public
+* `npm start`
+
+# Build para produccion
+* `npm run build`
+

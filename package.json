@@ -2,13 +2,12 @@
   "name": "documentario",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "/public/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "forever -w expressServer",
-    "dev": "webpack -w",
+    "start": "webpack -w",
     "build": "webpack --config webpack.config.prod.js -p",
-    "install": "npm install && bower install && webpack"
+    "setup": "npm install && bower install && webpack"
   },
   "keywords": [],
   "author": "",
